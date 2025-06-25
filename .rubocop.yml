@@ -1,0 +1,15 @@
+# This file is used by Standard to configure RuboCop
+# You can use it to customize linting rules for this project
+
+# Inherit from Standard's configuration
+inherit_gem:
+  standard: config/base.yml
+
+# Custom exceptions for this project
+AllCops:
+  TargetRubyVersion: 2.7
+
+# Allow defining test classes within spec blocks for testing purposes
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/**/*_spec.rb'

@@ -1,0 +1,85 @@
+
+Randomized with seed 29230
+
+Built-in JSON Formatter Custom Message Test
+  fails without custom message (FAILED - 1)
+  fails with a simple custom message (FAILED - 2)
+  fails with hash expectation and custom message (FAILED - 3)
+
+Failures:
+
+  1) Built-in JSON Formatter Custom Message Test fails without custom message
+     Failure/Error: raise EnrichedExpectationNotMetError.new(e.message, structured_data)
+
+       expected: 3
+            got: 2
+
+       (compared using ==)
+     # ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:27:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'
+     # ./test_builtin_json_custom_message.rb:11:in 'block (2 levels) in <top (required)>'
+     # ------------------
+     # --- Caused by: ---
+     #   
+     #   expected: 3
+     #        got: 2
+     #   
+     #   (compared using ==)
+     #   ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:16:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'
+
+  2) Built-in JSON Formatter Custom Message Test fails with a simple custom message
+     Failure/Error: raise EnrichedExpectationNotMetError.new(e.message, structured_data)
+
+       expected: >= 100
+            got:    50
+     # ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:27:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'
+     # ./test_builtin_json_custom_message.rb:7:in 'block (2 levels) in <top (required)>'
+     # ------------------
+     # --- Caused by: ---
+     #   expected: >= 100
+     #        got:    50
+     #   ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:16:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'
+
+  3) Built-in JSON Formatter Custom Message Test fails with hash expectation and custom message
+     Failure/Error: raise EnrichedExpectationNotMetError.new(e.message, structured_data)
+
+       expected: {body: "Not Found", status: 404}
+            got: {body: "OK", status: 200}
+
+       (compared using ==)
+
+       Diff:
+       @@ -1,2 +1,2 @@
+       -:body => "Not Found",
+       -:status => 404,
+       +:body => "OK",
+       +:status => 200,
+     # ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:27:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'
+     # ./test_builtin_json_custom_message.rb:17:in 'block (2 levels) in <top (required)>'
+     # ------------------
+     # --- Caused by: ---
+     #   
+     #   expected: {body: "Not Found", status: 404}
+     #        got: {body: "OK", status: 200}
+     #   
+     #   (compared using ==)
+     #   
+     #   Diff:
+     #   @@ -1,2 +1,2 @@
+     #   -:body => "Not Found",
+     #   -:status => 404,
+     #   +:body => "OK",
+     #   +:status => 200,
+     #   ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:16:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'
+
+Finished in 0.00555 seconds (files took 0.0381 seconds to load)
+3 examples, 3 failures
+
+Failed examples:
+
+rspec ./test_builtin_json_custom_message.rb:10 # Built-in JSON Formatter Custom Message Test fails without custom message
+rspec ./test_builtin_json_custom_message.rb:4 # Built-in JSON Formatter Custom Message Test fails with a simple custom message
+rspec ./test_builtin_json_custom_message.rb:14 # Built-in JSON Formatter Custom Message Test fails with hash expectation and custom message
+
+Randomized with seed 29230
+
+{"version":"3.13.5","seed":29230,"examples":[{"id":"./test_builtin_json_custom_message.rb[1:2]","description":"fails without custom message","full_description":"Built-in JSON Formatter Custom Message Test fails without custom message","status":"failed","file_path":"./test_builtin_json_custom_message.rb","line_number":10,"run_time":0.004486,"pending_message":null,"exception":{"class":"RSpec::EnrichedJson::EnrichedExpectationNotMetError","message":"\nexpected: 3\n     got: 2\n\n(compared using ==)\n","backtrace":["./lib/rspec/enriched_json/expectation_helper_wrapper.rb:27:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'","./test_builtin_json_custom_message.rb:11:in 'block (2 levels) in <top (required)>'","------------------","--- Caused by: ---","  ","  expected: 3","       got: 2","  ","  (compared using ==)","  ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:16:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'"]}},{"id":"./test_builtin_json_custom_message.rb[1:1]","description":"fails with a simple custom message","full_description":"Built-in JSON Formatter Custom Message Test fails with a simple custom message","status":"failed","file_path":"./test_builtin_json_custom_message.rb","line_number":4,"run_time":0.000305,"pending_message":null,"exception":{"class":"RSpec::EnrichedJson::EnrichedExpectationNotMetError","message":"expected: >= 100\n     got:    50","backtrace":["./lib/rspec/enriched_json/expectation_helper_wrapper.rb:27:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'","./test_builtin_json_custom_message.rb:7:in 'block (2 levels) in <top (required)>'","------------------","--- Caused by: ---","  expected: >= 100","       got:    50","  ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:16:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'"]}},{"id":"./test_builtin_json_custom_message.rb[1:3]","description":"fails with hash expectation and custom message","full_description":"Built-in JSON Formatter Custom Message Test fails with hash expectation and custom message","status":"failed","file_path":"./test_builtin_json_custom_message.rb","line_number":14,"run_time":0.000193,"pending_message":null,"exception":{"class":"RSpec::EnrichedJson::EnrichedExpectationNotMetError","message":"\nexpected: {body: \"Not Found\", status: 404}\n     got: {body: \"OK\", status: 200}\n\n(compared using ==)\n\nDiff:\n@@ -1,2 +1,2 @@\n-:body => \"Not Found\",\n-:status => 404,\n+:body => \"OK\",\n+:status => 200,\n","backtrace":["./lib/rspec/enriched_json/expectation_helper_wrapper.rb:27:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'","./test_builtin_json_custom_message.rb:17:in 'block (2 levels) in <top (required)>'","------------------","--- Caused by: ---","  ","  expected: {body: \"Not Found\", status: 404}","       got: {body: \"OK\", status: 200}","  ","  (compared using ==)","  ","  Diff:","  @@ -1,2 +1,2 @@","  -:body => \"Not Found\",","  -:status => 404,","  +:body => \"OK\",","  +:status => 200,","  ./lib/rspec/enriched_json/expectation_helper_wrapper.rb:16:in 'RSpec::EnrichedJson::ExpectationHelperWrapper#handle_failure'"]}}],"summary":{"duration":0.005554,"example_count":3,"failure_count":3,"pending_count":0,"errors_outside_of_examples_count":0},"summary_line":"3 examples, 3 failures"}
