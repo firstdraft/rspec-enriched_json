@@ -61,7 +61,9 @@ With this gem, you get structured data alongside the original message:
 ```json
 {
   "exception": {
-    "message": "\nexpected: \"Hello, Ruby!\"\n     got: \"Hello, World!\"\n\n(compared using ==)\n"
+    "class": "RSpec::EnrichedJson::EnrichedExpectationNotMetError",
+    "message": "\nexpected: \"Hello, Ruby!\"\n     got: \"Hello, World!\"\n\n(compared using ==)\n",
+    "backtrace": ["./spec/example_spec.rb:5:in `block (2 levels) in <top (required)>'"]
   },
   "structured_data": {
     "expected": "Hello, Ruby!",
