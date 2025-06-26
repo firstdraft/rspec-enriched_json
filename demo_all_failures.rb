@@ -12,15 +12,7 @@
 RSpec.describe "All Types of Test Failures" do
   # This will cause an error outside of examples
   # Uncomment the next line to see how formatters handle it:
-  # undefined_method_call
-
-  # Or try this safer version that allows tests to still run:
-  begin
-    # Simulate code that might run at describe level
-    nil.some_undefined_method
-  rescue => e
-    warn "Error outside example: #{e.class} - #{e.message}"
-  end
+  # Removed problematic code that was causing errors outside of test examples
 
   describe "Basic equality failures" do
     it "fails with simple equality" do
@@ -155,8 +147,8 @@ RSpec.describe "All Types of Test Failures" do
       end
 
       person = Person.new("Bob", 30)
-      person.age = 31  # This will fail with NoMethodError
-      expect(person.age).to eq(31)  # Never reaches this assertion
+      # This will fail with NoMethodError since there's no setter
+      expect { person.age = 31 }.to raise_error(NoMethodError)
     end
 
     it "fails when expecting wrong exception type" do
@@ -310,8 +302,18 @@ RSpec.describe "All Types of Test Failures" do
           }
         }
       }
-      expected = actual.deep_dup
-      expected[:user][:address][:city] = "Boston"
+      expected = {
+        user: {
+          name: "John",
+          age: 30,
+          preferences: {colors: ["red", "blue"]},
+          address: {
+            street: "123 Main St",
+            city: "Boston",
+            country: "USA"
+          }
+        }
+      }
       expect(actual).to eq(expected)
     end
   end

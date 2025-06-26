@@ -6,16 +6,32 @@ A drop-in replacement for RSpec's built-in JSON formatter that enriches the outp
 
 To see the difference between RSpec's built-in JSON formatter and this enriched formatter, use the included demo script:
 
+### 1. View a specific failure with the built-in formatter (string-only):
 ```bash
-# Compare the two formatters side-by-side
-# Built-in formatter (string-only failure messages):
-bundle exec rspec demo_all_failures.rb --format json --no-profile 2>/dev/null | jq '.examples[4]'
+bundle exec rspec demo_all_failures.rb --format json --out standard_output.json 2>/dev/null && jq '.examples[] | select(.status == "failed") | {description, exception}' standard_output.json | head -20
+```
 
-# Enriched formatter (includes structured_data field):
-bundle exec rspec demo_all_failures.rb --format RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter --no-profile -r ./lib/rspec/enriched_json 2>/dev/null | jq '.examples[4]'
+### 2. View the same failure with the enriched formatter (includes structured data):
+```bash
+bundle exec rspec demo_all_failures.rb --format RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter --out enriched_output.json -r ./lib/rspec/enriched_json 2>/dev/null && jq '.examples[] | select(.status == "failed") | {description, exception, structured_data}' enriched_output.json | head -30
+```
 
-# For a cleaner comparison, look at just the structured data:
-bundle exec rspec demo_all_failures.rb --format RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter --no-profile -r ./lib/rspec/enriched_json 2>/dev/null | jq '.examples[] | select(.description == "fails with string comparison") | .structured_data'
+**Note:** The `2>/dev/null` redirects RSpec's progress output to keep the JSON output clean. Remove it if you want to see test progress.
+
+### 3. Compare a specific test's output between formatters:
+```bash
+# Built-in formatter - just the string message
+bundle exec rspec demo_all_failures.rb --format json --out standard_output.json 2>/dev/null && jq '.examples[] | select(.description == "fails with string comparison")' standard_output.json
+```
+
+```bash
+# Enriched formatter - includes parsed expected/actual values
+bundle exec rspec demo_all_failures.rb --format RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter --out enriched_output.json -r ./lib/rspec/enriched_json 2>/dev/null && jq '.examples[] | select(.description == "fails with string comparison")' enriched_output.json
+```
+
+### 4. Extract just the structured data for analysis:
+```bash
+bundle exec rspec demo_all_failures.rb --format RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter --out enriched_output.json -r ./lib/rspec/enriched_json 2>/dev/null && jq '.examples[] | select(.status == "failed") | {test: .description, expected: .structured_data.expected, actual: .structured_data.actual}' enriched_output.json
 ```
 
 The demo file `demo_all_failures.rb` contains 59 different test failure scenarios covering virtually all RSpec matcher types and how they appear in the JSON output.

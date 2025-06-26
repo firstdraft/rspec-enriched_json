@@ -23,6 +23,7 @@ Gemfile.lock
 
 # Test output files
 enriched_output.json
+standard_output.json
 
 # IDE
 .idea/
