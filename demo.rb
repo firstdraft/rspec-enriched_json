@@ -375,7 +375,7 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
             "class" => example["exception"]["class"],
             "message" => example["exception"]["message"]
           },
-          "enriched_with" => example["enriched_with"]
+          "details" => example["details"]
         })
       end
     end
@@ -383,4 +383,4 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
 end
 
 puts "\n\nNote: This demonstrates the enriched JSON output for failing tests."
-puts "The 'enriched_with' field provides programmatic access to expected/actual values."
+puts "The 'details' field provides programmatic access to expected/actual values."

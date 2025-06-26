@@ -11,7 +11,7 @@ RSpec.describe "Edge case handling" do
       expect(a).to eq([1, 2, 3])
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
       # Should not crash, should handle gracefully
-      expect(e.enriched_with[:actual]).to be_a(Array)
+      expect(e.details[:actual]).to be_a(Array)
     end
   end
 
@@ -21,8 +21,8 @@ RSpec.describe "Edge case handling" do
     expect { raise "error" }.not_to raise_error
   rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
     # Should handle gracefully with nil values
-    expect(e.enriched_with[:expected]).to be_nil
-    expect(e.enriched_with[:actual]).to be_nil
+    expect(e.details[:expected]).to be_nil
+    expect(e.details[:actual]).to be_nil
   end
 
   it "handles encoding issues" do
@@ -32,7 +32,7 @@ RSpec.describe "Edge case handling" do
       expect(invalid_utf8).to eq("valid string")
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
       # Should not crash on invalid encoding
-      expect(e.enriched_with).to have_key(:actual)
+      expect(e.details).to have_key(:actual)
     end
   end
 

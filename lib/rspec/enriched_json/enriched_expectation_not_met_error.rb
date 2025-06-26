@@ -6,11 +6,11 @@ module RSpec
   module EnrichedJson
     # Custom exception that carries structured data alongside the message
     class EnrichedExpectationNotMetError < RSpec::Expectations::ExpectationNotMetError
-      attr_reader :enriched_with
+      attr_reader :details
 
-      def initialize(message, enriched_with = {})
+      def initialize(message, details = {})
         super(message)
-        @enriched_with = enriched_with
+        @details = details
       end
     end
   end

@@ -106,7 +106,7 @@ module RSpec
         actual_raw = extract_value(matcher, :actual)
 
         # Collect structured data
-        enriched_with = {
+        details = {
           expected: Serializer.serialize_value(expected_raw),
           actual: Serializer.serialize_value(actual_raw),
           original_message: original_message,  # Only populated when custom message overrides it
@@ -117,7 +117,7 @@ module RSpec
         }
 
         # Raise new exception with data attached
-        raise EnrichedExpectationNotMetError.new(e.message, enriched_with)
+        raise EnrichedExpectationNotMetError.new(e.message, details)
       end
 
       private

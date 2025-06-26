@@ -41,7 +41,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       expect(diff_info["diffable"]).to eq(true)
     end
@@ -56,7 +56,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       expect(diff_info["diffable"]).to eq(true)
     end
@@ -71,7 +71,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       expect(diff_info["diffable"]).to eq(true)
     end
@@ -86,7 +86,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       # The Eq matcher considers itself diffable even for different types
       expect(diff_info["diffable"]).to eq(true)
@@ -112,7 +112,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       expect(diff_info["diffable"]).to eq(true)
     end
@@ -127,7 +127,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       # The Eq matcher considers itself diffable even with nil values
       expect(diff_info["diffable"]).to eq(true)
@@ -153,7 +153,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       expect(diff_info["diffable"]).to eq(false)
     end
@@ -188,7 +188,7 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["enriched_with"]["diff_info"]
+      diff_info = output["examples"].first["details"]["diff_info"]
 
       # Our logic: nil vs string is not diffable
       expect(diff_info["diffable"]).to eq(false)

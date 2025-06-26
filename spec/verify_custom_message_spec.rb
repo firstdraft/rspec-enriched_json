@@ -17,8 +17,8 @@ RSpec.describe "Custom message behavior verification" do
       expect(e.message).to eq("Insufficient funds")
 
       # But we also preserve the original message that was overridden
-      expect(e.enriched_with[:original_message]).to include("expected: >= 100")
-      expect(e.enriched_with[:original_message]).to include("got:")
+      expect(e.details[:original_message]).to include("expected: >= 100")
+      expect(e.details[:original_message]).to include("got:")
     end
   end
 
@@ -34,7 +34,7 @@ RSpec.describe "Custom message behavior verification" do
       expect(e.message).to include("got:    50")
 
       # No original message needed since we're using the default
-      expect(e.enriched_with[:original_message]).to be_nil
+      expect(e.details[:original_message]).to be_nil
     end
   end
 end
