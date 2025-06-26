@@ -1,8 +1,6 @@
-# TODOs for Enhanced RSpec JSON Formatter
+# TODOs for RSpec::EnrichedJson
 
 ## Completed Features
-
-These features have already been implemented in the current version:
 
 - [x] **Structured Data Extraction**
   - Expected and actual values are captured as proper JSON objects (not strings)
@@ -23,148 +21,141 @@ These features have already been implemented in the current version:
   - When custom failure messages are provided, original matcher message is preserved
   - Available in `original_message` field of structured data
 
-## Potential Enhancements to Add
+## High Priority Improvements
 
-### High Priority - Most Valuable Additions
+- [ ] **Add Configuration Options**
+  - Allow customization of serialization limits (max_depth, max_array_size, max_string_length)
+  - Toggle inclusion of metadata, timestamps, backtrace
+  - Provide sensible defaults with ability to override
+  ```ruby
+  RSpec::EnrichedJson.configure do |config|
+    config.max_depth = 10
+    config.max_string_length = 5000
+    config.include_metadata = true
+    config.include_timestamps = true
+  end
+  ```
 
-- [ ] **Custom Metadata/Tags**
-  - Add all user-defined metadata to JSON output
-  - Include tags like `:priority`, `:severity`, `:type`, `:db`, etc.
-  - Useful for filtering, categorizing, and analyzing failures
+- [ ] **Support Aggregate Failures**
+  - Capture all failures in aggregate_failures blocks, not just the first
+  - Structure output to include array of failures
+  - Critical for modern test suites using aggregate_failures
 
-- [ ] **Timing Timestamps**
-  - Add `started_at` and `finished_at` timestamps (not just duration)
-  - Useful for correlating with logs, metrics, and other system events
-  - Help identify when failures occurred in long test suites
+- [ ] **Add Metadata Capture**
+  - File path and line numbers
+  - Custom tags (`:focus`, `:slow`, `:db`, `:priority`, etc.)
+  - Example group hierarchy
+  - Test IDs for re-running specific tests
+  - Described class information
 
-- [ ] **Aggregate Failures**
-  - Show all failures in an example, not just the first
-  - Include expected/actual for each failed expectation
-  - Critical for examples using `:aggregate_failures`
+- [ ] **Smart ActiveRecord/ActiveModel Handling**
+  - Special serialization for Rails models
+  - Extract attributes instead of just inspect string
+  - Handle associations intelligently
+  - Avoid N+1 serialization issues
 
-- [ ] **Additional Matcher Details**
-  - Add matcher-specific data (what was missing from arrays, ranges tested, etc.)
-  - Show whether matcher supports diffing (`diffable?` status)
-  - Include matcher configuration (e.g., case sensitivity for string matchers)
+## Medium Priority Improvements
 
-### Medium Priority - Useful Context
+- [ ] **Better Error Recovery**
+  - Graceful handling when inspect/to_s raises errors
+  - Provide helpful context about serialization failures
+  - Include fallback values and error reasons
+  ```ruby
+  {
+    "serialization_error": true,
+    "reason": "Circular reference detected",
+    "class": "User",
+    "fallback_value": "#<User id: 123>"
+  }
+  ```
 
-- [ ] **Multiple Location Formats**
-  - Add `absolute_file_path` for IDE integration
-  - Include `rerun_file_path` for easy test re-execution
-  - Add `id` and `scoped_id` for precise test identification
+- [ ] **Thread Safety**
+  - Ensure wrapper works correctly with parallel test execution
+  - Test with parallel_tests gem
+  - Document thread safety guarantees
 
-- [ ] **Pending/Skip Details**
-  - Include skip reasons
-  - Show `pending_fixed` status
-  - Add `pending_exception` details
+- [ ] **Performance Monitoring**
+  - Optional capture of started_at/finished_at timestamps
+  - Memory usage tracking (if enabled)
+  - Performance impact documentation
 
-- [ ] **Example Group Hierarchy**
-  - Include parent group descriptions
-  - Show full ancestry chain
-  - Add shared example inclusion details
+- [ ] **Smart Serialization Improvements**
+  - Better handling of Date/Time objects (ISO8601 format)
+  - Support for custom serializers per class
+  - Handle binary data gracefully
+  - Deal with mixed encoding issues
 
-- [ ] **Formatted Output Variants**
-  - Provide colorized output for terminal display
-  - Include HTML formatted version
-  - Add structured diff information
-  - Provide message as array of lines
+- [ ] **Multiple Output Formats**
+  - Minimal format for CI (essential data only)
+  - Full format for debugging (all available data)
+  - Allow format selection via command line
 
-### Lower Priority - Nice to Have
+## Low Priority Improvements
 
-- [ ] **Test Environment Context**
-  - RSpec configuration settings
-  - Random seed value
-  - Applied filters/exclusions
+- [ ] **Integration Helpers**
+  - CI/CD annotation generators (GitHub, GitLab, etc.)
+  - HTML/Markdown report generators
+  - Example parsers in multiple languages
 
-- [ ] **Performance Data**
-  - Memory usage (if tracked)
-  - Database query counts (if instrumented)
-  - Resource utilization metrics
+- [ ] **Better Installation Experience**
+  - Auto-configuration helper
+  - CLI shortcuts (`--format enriched`)
+  - Migration guide from other formatters
 
-- [ ] **Enhanced Backtrace Information**
-  - Full backtrace (not just formatted)
-  - Backtrace with/without filtering
-  - Source code snippets around failure
+- [ ] **Enhanced Documentation**
+  - Comprehensive CI/CD integration guide
+  - Performance benchmarks vs vanilla formatter
+  - Troubleshooting guide for common issues
+  - Example JSON parsing in Ruby, Python, JavaScript
 
-## Implementation Considerations
+- [ ] **Streaming Support**
+  - For very large test suites
+  - Reduce memory usage
+  - Progressive output
 
-### Backwards Compatibility
-- All additions should be in new fields
-- Existing JSON structure must remain unchanged
-- Use feature flags or configuration options for new data
+## Nice to Have Features
 
-### Performance Impact
-- Additional data extraction should be lazy
-- Avoid expensive operations unless explicitly requested
-- Consider memory usage for large test suites
+- [ ] **SimpleCov Integration**
+  - Include coverage data in output
+  - Link failures to uncovered code
 
-### Configuration Options
-- Allow users to opt-in to additional data
-- Provide presets (minimal, standard, full)
-- Support field-level inclusion/exclusion
+- [ ] **Spring/Zeus Compatibility**
+  - Test and ensure compatibility
+  - Document any special configuration needed
 
-## Example Enhanced Output Structure
+- [ ] **RSpec Bisect Support**
+  - Ensure formatter works with RSpec's bisect command
+  - Add bisect-specific data if helpful
 
-```json
-{
-  "examples": [{
-    "id": "spec/models/user_spec.rb[1:2:1]",
-    "description": "validates email format",
-    "full_description": "User validations validates email format",
-    "status": "failed",
-    
-    // Location variants
-    "file_path": "./spec/models/user_spec.rb",
-    "line_number": 42,
-    "location": "./spec/models/user_spec.rb:42",
-    "absolute_file_path": "/Users/john/projects/myapp/spec/models/user_spec.rb",
-    "rerun_file_path": "./spec/models/user_spec.rb:42",
-    
-    // Timing
-    "run_time": 0.023,
-    "started_at": "2024-01-15T10:30:45.123Z",
-    "finished_at": "2024-01-15T10:30:45.146Z",
-    
-    // Custom metadata
-    "metadata": {
-      "type": "model",
-      "priority": "high",
-      "slow": true,
-      "db": true,
-      "jira": "PROJ-123"
-    },
-    
-    // Enhanced failure data
-    "exception": {
-      "class": "RSpec::Expectations::ExpectationNotMetError",
-      "message": "expected: true\n     got: false",
-      "backtrace": ["..."],
-      "formatted_output": {
-        "plain": "expected: true\n     got: false",
-        "colorized": "\e[31mexpected: true\e[0m\n\e[31m     got: false\e[0m",
-        "message_lines": ["expected: true", "     got: false"]
-      }
-    },
-    
-    // Structured data (current enhancement)
-    "structured_data": {
-      "expected": true,
-      "actual": false,
-      "matcher_name": "RSpec::Matchers::BuiltIn::Eq",
-      "matcher_details": {
-        "diffable": true,
-        "supports_block_expectations": false
-      },
-      "aggregate_failures": [
-        {
-          "expected": "valid@email.com",
-          "actual": "invalid-email",
-          "matcher_name": "RSpec::Matchers::BuiltIn::Match",
-          "message": "expected 'invalid-email' to match /\\A[^@]+@[^@]+\\z/"
-        }
-      ]
-    }
-  }]
-}
-```
+- [ ] **Custom Matcher Support Guide**
+  - Documentation for making custom matchers work well with enriched output
+  - Best practices for expected/actual methods
+
+## Technical Debt
+
+- [ ] **Add More Integration Tests**
+  - Test with various RSpec configurations
+  - Test with popular RSpec extensions
+  - Test with different Ruby versions
+
+- [ ] **Performance Optimization**
+  - Profile serialization code
+  - Add caching where appropriate
+  - Benchmark against vanilla formatter
+
+- [ ] **Code Organization**
+  - Consider splitting large files
+  - Extract serialization strategies
+  - Improve module structure
+
+## Backward Compatibility
+
+- [ ] **Version Output Format**
+  - Add version field to JSON output
+  - Plan for future breaking changes
+  - Document upgrade paths
+
+- [ ] **Maintain Compatibility**
+  - All new fields should be opt-in
+  - Existing structure must remain unchanged
+  - Deprecation strategy for future changes
