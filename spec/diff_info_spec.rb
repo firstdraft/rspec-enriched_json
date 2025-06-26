@@ -4,7 +4,7 @@ require "spec_helper"
 require "tempfile"
 require "json"
 
-RSpec.describe "diff_info.diffable" do
+RSpec.describe "diffable" do
   def run_formatter_with_content(test_content)
     test_file = Tempfile.new(["test", ".rb"])
     test_file.write(test_content)
@@ -41,9 +41,8 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
-      expect(diff_info["diffable"]).to eq(true)
+      expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
     it "marks array comparisons as diffable" do
@@ -56,9 +55,8 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
-      expect(diff_info["diffable"]).to eq(true)
+      expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
     it "marks hash comparisons as diffable" do
@@ -71,9 +69,8 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
-      expect(diff_info["diffable"]).to eq(true)
+      expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
     it "marks different type comparisons as diffable when matcher says so" do
@@ -86,10 +83,9 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
       # The Eq matcher considers itself diffable even for different types
-      expect(diff_info["diffable"]).to eq(true)
+      expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
     it "marks same class objects as diffable if they respond to to_s" do
@@ -112,9 +108,8 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
-      expect(diff_info["diffable"]).to eq(true)
+      expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
     it "marks nil comparisons as diffable when matcher says so" do
@@ -127,10 +122,9 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
       # The Eq matcher considers itself diffable even with nil values
-      expect(diff_info["diffable"]).to eq(true)
+      expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
     it "respects matcher's diffable? method if present" do
@@ -153,9 +147,8 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
-      expect(diff_info["diffable"]).to eq(false)
+      expect(output["examples"].first["details"]["diffable"]).to eq(false)
     end
 
     it "uses our logic when matcher has no diffable? method" do
@@ -188,10 +181,9 @@ RSpec.describe "diff_info.diffable" do
       RUBY
 
       output = run_formatter_with_content(test_content)
-      diff_info = output["examples"].first["details"]["diff_info"]
 
       # Our logic: nil vs string is not diffable
-      expect(diff_info["diffable"]).to eq(false)
+      expect(output["examples"].first["details"]["diffable"]).to eq(false)
     end
   end
 end

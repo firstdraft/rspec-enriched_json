@@ -111,9 +111,7 @@ module RSpec
           actual: Serializer.serialize_value(actual_raw),
           original_message: original_message,  # Only populated when custom message overrides it
           matcher_name: matcher.class.name,
-          diff_info: {
-            diffable: values_diffable?(expected_raw, actual_raw, matcher)
-          }
+          diffable: values_diffable?(expected_raw, actual_raw, matcher)
         }
 
         # Raise new exception with data attached

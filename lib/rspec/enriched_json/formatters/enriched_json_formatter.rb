@@ -90,7 +90,7 @@ module RSpec
             actual: safe_serialize(details[:actual]),
             matcher_name: details[:matcher_name],
             original_message: details[:original_message],
-            diff_info: details[:diff_info]
+            diffable: details[:diffable]
           }.compact
         end
 

@@ -10,7 +10,7 @@ To see the difference between RSpec's built-in JSON formatter and this enriched 
 ruby demo.rb
 ```
 
-This interactive demo script runs the same failing tests with both formatters and shows you the difference side-by-side. No external dependencies, no file cleanup needed!
+This interactive demo script runs the same failing tests with both formatters and shows you the difference side-by-side.
 
 **What you'll see:**
 - **Built-in formatter**: Failure information embedded in string messages  
@@ -88,9 +88,7 @@ With this gem, you get structured data alongside the original message:
     "actual": "Hello, World!",
     "matcher_name": "RSpec::Matchers::BuiltIn::Eq",
     "original_message": null,
-    "diff_info": {
-      "diffable": true
-    }
+    "diffable": true
   }
 }
 ```
@@ -104,7 +102,7 @@ With this gem, you get structured data alongside the original message:
 - **Graceful degradation**: Regular exceptions (non-expectation failures) work normally
 - **Enhanced metadata capture**: Test location, tags, hierarchy, and custom metadata
 - **Robust error recovery**: Handles objects that fail to serialize without crashing
-- **Diff information**: Includes `diff_info.diffable` to help tools determine if values can be meaningfully diffed
+- **Diff information**: Includes `diffable` to help tools determine if values can be meaningfully diffed
 
 ## Examples
 
