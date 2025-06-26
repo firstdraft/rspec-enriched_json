@@ -2,6 +2,40 @@
 
 A drop-in replacement for RSpec's built-in JSON formatter that enriches the output with structured failure data. This makes it easy to programmatically analyze test results, extract expected/actual values, and build better CI/CD integrations.
 
+## Quick Demo
+
+To see the difference between RSpec's built-in JSON formatter and this enriched formatter, use the included demo script:
+
+```bash
+# Compare the two formatters side-by-side
+# Built-in formatter (string-only failure messages):
+bundle exec rspec demo_all_failures.rb --format json --no-profile 2>/dev/null | jq '.examples[4]'
+
+# Enriched formatter (includes structured_data field):
+bundle exec rspec demo_all_failures.rb --format RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter --no-profile -r ./lib/rspec/enriched_json 2>/dev/null | jq '.examples[4]'
+
+# For a cleaner comparison, look at just the structured data:
+bundle exec rspec demo_all_failures.rb --format RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter --no-profile -r ./lib/rspec/enriched_json 2>/dev/null | jq '.examples[] | select(.description == "fails with string comparison") | .structured_data'
+```
+
+The demo file `demo_all_failures.rb` contains 59 different test failure scenarios covering virtually all RSpec matcher types and how they appear in the JSON output.
+
+The demo script (`demo_all_failures.rb`) includes various types of test failures:
+- Simple equality failures
+- String, array, and hash comparisons
+- Custom error messages
+- Exception failures
+- Complex object comparisons
+- Various matcher types (include, respond_to, be_within, etc.)
+
+Key differences you'll see:
+- **Built-in formatter**: Failure information is embedded in string messages
+- **Enriched formatter**: Adds a `structured_data` field with:
+  - `expected`: The expected value as a proper JSON object
+  - `actual`: The actual value as a proper JSON object
+  - `matcher_name`: The RSpec matcher class used
+  - `original_message`: Preserved when custom messages are provided
+
 ## Requirements
 
 - Ruby 2.7 or higher
