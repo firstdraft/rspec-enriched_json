@@ -41,7 +41,7 @@
   - Structure output to include array of failures
   - Critical for modern test suites using aggregate_failures
 
-- [ ] **Add Metadata Capture**
+- [x] **Add Metadata Capture**
   - File path and line numbers
   - Custom tags (`:focus`, `:slow`, `:db`, `:priority`, etc.)
   - Example group hierarchy
@@ -56,7 +56,7 @@
 
 ## Medium Priority Improvements
 
-- [ ] **Better Error Recovery**
+- [x] **Better Error Recovery**
   - Graceful handling when inspect/to_s raises errors
   - Provide helpful context about serialization failures
   - Include fallback values and error reasons

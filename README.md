@@ -99,6 +99,8 @@ With this gem, you get structured data alongside the original message:
 - **Rich object support**: Arrays, hashes, and custom objects are properly serialized
 - **Original message preservation**: When you override with a custom message, the original is preserved
 - **Graceful degradation**: Regular exceptions (non-expectation failures) work normally
+- **Enhanced metadata capture**: Test location, tags, hierarchy, and custom metadata
+- **Robust error recovery**: Handles objects that fail to serialize without crashing
 
 ## Examples
 
@@ -127,6 +129,18 @@ expect(balance).to be >= required,
   "Insufficient funds: $#{balance} available, $#{required} required"
 # exception.message: "Insufficient funds: $50 available, $100 required"
 # structured_data: { "original_message": "expected: >= 100\n     got:    50" }
+```
+
+### Metadata Capture
+```ruby
+it "validates user input", :slow, :db, priority: :high do
+  expect(user).to be_valid
+end
+# metadata includes:
+# - location: "./spec/models/user_spec.rb:42"
+# - absolute_file_path: "/path/to/project/spec/models/user_spec.rb"
+# - tags: { "slow": true, "db": true, "priority": "high" }
+# - example_group_hierarchy: ["User", "validations", "email format"]
 ```
 
 ## Use Cases

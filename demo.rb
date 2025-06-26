@@ -278,6 +278,11 @@ test_content = <<~'RUBY'
       expect(Product.new("Laptop", 999)).to eq(Product.new("Laptop", 899))
     end
     
+    # Metadata Examples
+    it "test with metadata", :slow, :db, priority: :high do
+      expect(true).to eq(false)
+    end
+    
     it "custom object with many instance variables" do
       class ComplexObject
         def initialize
@@ -351,7 +356,7 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
       "Other Matchers" => ["throw_symbol", "exist", "cover", "cover multiple values", "respond_to", "respond_to with arguments", "have_attributes", "satisfy", "satisfy with complex block"],
       "Compound & Negated" => ["and", "or", "not_to eq", "not_to include"],
       "Custom Messages" => ["custom failure message", "custom message with block"],
-      "Complex Objects" => ["struct comparison", "custom object with many instance variables"],
+      "Complex Objects" => ["struct comparison", "test with metadata", "custom object with many instance variables"],
       "Fuzzy Matchers" => ["a_string_matching", "a_hash_including", "a_collection_containing_exactly", "an_instance_of", "include with hash conditions"],
       "Yield Matchers" => ["yield_control", "yield_with_args"]
     }
