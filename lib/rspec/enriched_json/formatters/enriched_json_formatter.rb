@@ -85,13 +85,22 @@ module RSpec
         end
 
         def safe_structured_data(details)
-          {
+          # Start with core fields
+          result = {
             expected: safe_serialize(details[:expected]),
             actual: safe_serialize(details[:actual]),
             matcher_name: details[:matcher_name],
             original_message: details[:original_message],
             diffable: details[:diffable]
-          }.compact
+          }
+
+          # Add any additional matcher-specific fields
+          details.each do |key, value|
+            next if [:expected, :actual, :matcher_name, :original_message, :diffable].include?(key)
+            result[key] = safe_serialize(value)
+          end
+
+          result.compact
         end
 
         def safe_serialize(value)

@@ -114,6 +114,10 @@ module RSpec
           diffable: values_diffable?(expected_raw, actual_raw, matcher)
         }
 
+        # Capture matcher-specific instance variables
+        matcher_data = extract_matcher_specific_data(matcher)
+        details.merge!(matcher_data) unless matcher_data.empty?
+
         # Raise new exception with data attached
         raise EnrichedExpectationNotMetError.new(e.message, details)
       end
@@ -129,6 +133,71 @@ module RSpec
         (value == matcher && !value.nil?) ? nil : value
       rescue
         nil
+      end
+
+      def extract_matcher_specific_data(matcher)
+        # Skip common instance variables that are already captured
+        skip_vars = [
+          :@expected, :@actual, :@args, :@name,
+          # Skip internal implementation details
+          :@matcher, :@matchers, :@target,
+          :@delegator, :@base_matcher,
+          :@block, :@event_proc,
+          # Skip verbose internal state
+          :@pairings_maximizer, :@best_solution,
+          :@expected_captures, :@match_captures,
+          :@failures, :@errors,
+          # Skip RSpec internals
+          :@matcher_execution_context,
+          :@chained_method_with_args_combos
+        ]
+
+        # Define meaningful variables we want to keep
+        useful_vars = [
+          :@missing_items, :@extra_items,  # ContainExactly
+          :@expecteds, :@actuals,           # Include
+          :@operator, :@delta, :@tolerance, # Comparison matchers
+          :@expected_before, :@expected_after, :@actual_before, :@actual_after, # Change matcher
+          :@from, :@to, :@minimum, :@maximum, :@count, # Various matchers
+          :@failure_message, :@failure_message_when_negated,
+          :@description
+        ]
+
+        # Get all instance variables
+        ivars = matcher.instance_variables - skip_vars
+        return {} if ivars.empty?
+
+        # Build a hash of matcher-specific data
+        matcher_data = {}
+
+        ivars.each do |ivar|
+          # Only include if it's in our useful list or looks like user data
+          unless useful_vars.include?(ivar) || ivar.to_s.match?(/^@(missing|extra|failed|unmatched|matched)_/)
+            next
+          end
+
+          value = matcher.instance_variable_get(ivar)
+
+          # Skip if value is nil or the matcher itself
+          next if value.nil? || value == matcher
+
+          # Skip procs and complex objects unless they're simple collections
+          if value.is_a?(Proc) || (value.is_a?(Object) && !value.is_a?(Enumerable) && !value.is_a?(Numeric) && !value.is_a?(String) && !value.is_a?(Symbol))
+            next
+          end
+
+          # Convert instance variable name to a more readable format
+          # @missing_items -> missing_items
+          key = ivar.to_s.delete_prefix("@").to_sym
+
+          # Serialize the value
+          matcher_data[key] = Serializer.serialize_value(value)
+        rescue
+          # Skip this instance variable if we can't serialize it
+          next
+        end
+
+        matcher_data
       end
 
       def values_diffable?(expected, actual, matcher)
