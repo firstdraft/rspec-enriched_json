@@ -89,8 +89,9 @@ module RSpec
             expected: safe_serialize(structured_data[:expected]),
             actual: safe_serialize(structured_data[:actual]),
             matcher_name: structured_data[:matcher_name],
-            original_message: structured_data[:original_message]
-          }
+            original_message: structured_data[:original_message],
+            diff_info: structured_data[:diff_info]
+          }.compact
         end
 
         def safe_serialize(value)

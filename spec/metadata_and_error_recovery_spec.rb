@@ -114,4 +114,3 @@ RSpec.describe "Metadata capture and error recovery" do
   # Objects that fail to serialize will return error information instead of crashing
   # This is tested indirectly through the edge case specs
 end
-

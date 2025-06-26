@@ -87,7 +87,10 @@ With this gem, you get structured data alongside the original message:
     "expected": "Hello, Ruby!",
     "actual": "Hello, World!",
     "matcher_name": "RSpec::Matchers::BuiltIn::Eq",
-    "original_message": null
+    "original_message": null,
+    "diff_info": {
+      "diffable": true
+    }
   }
 }
 ```
@@ -101,6 +104,7 @@ With this gem, you get structured data alongside the original message:
 - **Graceful degradation**: Regular exceptions (non-expectation failures) work normally
 - **Enhanced metadata capture**: Test location, tags, hierarchy, and custom metadata
 - **Robust error recovery**: Handles objects that fail to serialize without crashing
+- **Diff information**: Includes `diff_info.diffable` to help tools determine if values can be meaningfully diffed
 
 ## Examples
 
