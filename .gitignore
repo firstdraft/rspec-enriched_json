@@ -21,7 +21,7 @@
 # Bundler
 Gemfile.lock
 
-# Test output files
+# Test output files (from old complex demo)
 enriched_output.json
 standard_output.json
 

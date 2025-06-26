@@ -3,3 +3,4 @@ parallel: true
 ignore:
   - 'spec/edge_cases_spec.rb:40'
   - 'spec/safety_limits_spec.rb:52'
+  - 'rspec/**/*'

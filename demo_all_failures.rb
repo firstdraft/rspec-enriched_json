@@ -1,8 +1,15 @@
 #!/usr/bin/env ruby
 
-# Comprehensive demo of RSpec failure types and JSON formatters
+# Legacy comprehensive demo of RSpec failure types and JSON formatters
 #
-# To use this demo:
+# NOTE: For an easier demo experience, use the new demo script instead:
+#   ruby demo.rb
+#
+# This file contains 59 different test failure scenarios for comprehensive testing,
+# but the commands to run it are complex. The new demo.rb provides a better
+# user experience with side-by-side comparisons.
+#
+# To use this comprehensive demo:
 #   1. Run with built-in JSON formatter:
 #      bundle exec rspec demo_all_failures.rb --format json --no-profile 2>/dev/null | jq .
 #
