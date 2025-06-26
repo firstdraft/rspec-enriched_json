@@ -34,7 +34,7 @@ RSpec.describe "RSpec::EnrichedJson Integration" do
 
     example = result["examples"].first
     expect(example["status"]).to eq("failed")
-    expect(example["structured_data"]).to include(
+    expect(example["enriched_with"]).to include(
       "expected" => 3,
       "actual" => 2,
       "matcher_name" => "RSpec::Matchers::BuiltIn::Eq"
@@ -58,7 +58,7 @@ RSpec.describe "RSpec::EnrichedJson Integration" do
 
     example = result["examples"].first
     # Should preserve the original message that was overridden
-    expect(example["structured_data"]["original_message"]).to include("expected: >= 100")
+    expect(example["enriched_with"]["original_message"]).to include("expected: >= 100")
   end
 
   it "does not add structured data for passing tests" do
@@ -76,7 +76,7 @@ RSpec.describe "RSpec::EnrichedJson Integration" do
 
     example = result["examples"].first
     expect(example["status"]).to eq("passed")
-    expect(example).not_to have_key("structured_data")
+    expect(example).not_to have_key("enriched_with")
   end
 
   it "handles regular exceptions without structured data" do
@@ -95,6 +95,6 @@ RSpec.describe "RSpec::EnrichedJson Integration" do
     example = result["examples"].first
     expect(example["status"]).to eq("failed")
     expect(example["exception"]["class"]).to eq("NoMethodError")
-    expect(example).not_to have_key("structured_data")
+    expect(example).not_to have_key("enriched_with")
   end
 end

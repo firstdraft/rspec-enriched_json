@@ -83,7 +83,7 @@ With this gem, you get structured data alongside the original message:
     "message": "\nexpected: \"Hello, Ruby!\"\n     got: \"Hello, World!\"\n\n(compared using ==)\n",
     "backtrace": ["./spec/example_spec.rb:5:in `block (2 levels) in <top (required)>'"]
   },
-  "structured_data": {
+  "enriched_with": {
     "expected": "Hello, Ruby!",
     "actual": "Hello, World!",
     "matcher_name": "RSpec::Matchers::BuiltIn::Eq",
@@ -111,20 +111,20 @@ With this gem, you get structured data alongside the original message:
 ### Simple Values
 ```ruby
 expect(1 + 1).to eq(3)
-# structured_data: { "expected": 3, "actual": 2 }
+# enriched_with: { "expected": 3, "actual": 2 }
 ```
 
 ### Collections
 ```ruby
 expect([1, 2, 3]).to eq([1, 2, 4])
-# structured_data: { "expected": [1, 2, 4], "actual": [1, 2, 3] }
+# enriched_with: { "expected": [1, 2, 4], "actual": [1, 2, 3] }
 ```
 
 ### Complex Objects
 ```ruby
 Product = Struct.new(:name, :price)
 expect(Product.new("Laptop", 999)).to eq(Product.new("Laptop", 899))
-# structured_data includes class info and struct values
+# enriched_with includes class info and struct values
 ```
 
 ### Custom Messages
@@ -132,7 +132,7 @@ expect(Product.new("Laptop", 999)).to eq(Product.new("Laptop", 899))
 expect(balance).to be >= required,
   "Insufficient funds: $#{balance} available, $#{required} required"
 # exception.message: "Insufficient funds: $50 available, $100 required"
-# structured_data: { "original_message": "expected: >= 100\n     got:    50" }
+# enriched_with: { "original_message": "expected: >= 100\n     got:    50" }
 ```
 
 ### Metadata Capture

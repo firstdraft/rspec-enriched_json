@@ -9,7 +9,7 @@ RSpec.describe "Safety limits for serialization" do
     begin
       expect(very_long_string).to eq("short")
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
-      actual_data = e.structured_data[:actual]
+      actual_data = e.enriched_with[:actual]
       expect(actual_data.length).to be <= 1100  # 1000 + "... (truncated)"
       expect(actual_data).to end_with("... (truncated)")
     end
@@ -21,7 +21,7 @@ RSpec.describe "Safety limits for serialization" do
     begin
       expect(large_array).to eq([1, 2, 3])
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
-      expect(e.structured_data[:actual]).to eq("[Large array: 200 items]")
+      expect(e.enriched_with[:actual]).to eq("[Large array: 200 items]")
     end
   end
 
@@ -33,7 +33,7 @@ RSpec.describe "Safety limits for serialization" do
       expect(deeply_nested).to eq({})
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
       # Should serialize up to MAX_SERIALIZATION_DEPTH
-      actual = e.structured_data[:actual]
+      actual = e.enriched_with[:actual]
       expect(actual).to be_a(Hash)
 
       # Navigate to the depth limit
@@ -60,7 +60,7 @@ RSpec.describe "Safety limits for serialization" do
     begin
       expect(obj).to eq("something else")
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
-      actual_data = e.structured_data[:actual]
+      actual_data = e.enriched_with[:actual]
       # Instance variables are only included if <= 10
       # Since we have 15, they should not be included at all
       expect(actual_data["instance_variables"]).to be_nil

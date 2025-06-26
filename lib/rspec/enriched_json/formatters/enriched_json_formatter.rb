@@ -25,8 +25,8 @@ module RSpec
                 }
 
                 # Add structured data if available
-                if e.is_a?(RSpec::EnrichedJson::EnrichedExpectationNotMetError) && e.structured_data
-                  hash[:structured_data] = safe_structured_data(e.structured_data)
+                if e.is_a?(RSpec::EnrichedJson::EnrichedExpectationNotMetError) && e.enriched_with
+                  hash[:enriched_with] = safe_structured_data(e.enriched_with)
                 end
               end
             end
@@ -84,13 +84,13 @@ module RSpec
           hierarchy
         end
 
-        def safe_structured_data(structured_data)
+        def safe_structured_data(enriched_with)
           {
-            expected: safe_serialize(structured_data[:expected]),
-            actual: safe_serialize(structured_data[:actual]),
-            matcher_name: structured_data[:matcher_name],
-            original_message: structured_data[:original_message],
-            diff_info: structured_data[:diff_info]
+            expected: safe_serialize(enriched_with[:expected]),
+            actual: safe_serialize(enriched_with[:actual]),
+            matcher_name: enriched_with[:matcher_name],
+            original_message: enriched_with[:original_message],
+            diff_info: enriched_with[:diff_info]
           }.compact
         end
 
