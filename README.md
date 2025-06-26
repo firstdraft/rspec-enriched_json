@@ -180,7 +180,7 @@ Default limits:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/raghubetina/rspec-enriched_json.
+Bug reports and pull requests are welcome on GitHub at https://github.com/firstdraft/rspec-enriched_json.
 
 ## License
 
