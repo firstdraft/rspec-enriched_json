@@ -18,6 +18,10 @@
 .rspec_status
 /rspec/
 
+# Other gems for AI context
+/diffy/
+/super_diff/
+
 # Bundler
 Gemfile.lock
 
