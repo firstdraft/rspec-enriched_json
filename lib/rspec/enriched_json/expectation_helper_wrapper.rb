@@ -2,6 +2,7 @@
 
 require "json"
 require "rspec/expectations"
+require "rspec/support/differ"
 
 module RSpec
   module EnrichedJson
@@ -114,6 +115,12 @@ module RSpec
           diffable: values_diffable?(expected_raw, actual_raw, matcher)
         }
 
+        # Generate diff if values are diffable
+        if details[:diffable] && expected_raw && actual_raw
+          diff = generate_diff(actual_raw, expected_raw)
+          details[:diff] = diff unless diff.nil? || diff.strip.empty?
+        end
+
         # Capture matcher-specific instance variables
         matcher_data = extract_matcher_specific_data(matcher)
         details.merge!(matcher_data) unless matcher_data.empty?
@@ -225,6 +232,20 @@ module RSpec
       rescue
         # If any error occurs during checking, assume not diffable
         false
+      end
+
+      def generate_diff(actual, expected)
+        # Use RSpec's own differ for consistency
+        differ = RSpec::Support::Differ.new(
+          object_preparer: lambda { |obj|
+            RSpec::Matchers::Composable.surface_descriptions_in(obj)
+          },
+          color: false # Always disable color for JSON output
+        )
+        differ.diff(actual, expected)
+      rescue
+        # If diff generation fails, return nil rather than crashing
+        nil
       end
     end
   end
