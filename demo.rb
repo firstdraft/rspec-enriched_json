@@ -173,6 +173,16 @@ test_content = <<~'RUBY'
       expect { arr.push(3) }.to change { arr.size }.by(2)
     end
     
+    it "change by_at_least" do
+      score = 10
+      expect { score += 1 }.to change { score }.by_at_least(5)
+    end
+    
+    it "change by_at_most" do
+      items = []
+      expect { 3.times { items << "x" } }.to change { items.count }.by_at_most(2)
+    end
+    
     # Output Matchers
     it "output to stdout" do
       expect { print "hello" }.to output("goodbye").to_stdout
@@ -193,6 +203,11 @@ test_content = <<~'RUBY'
     
     it "raise_error when none raised" do
       expect { 1 + 1 }.to raise_error
+    end
+    
+    it "unexpected exception (outside expect block)" do
+      # This will raise ZeroDivisionError
+      10 / 0
     end
     
     # Throw Matchers
@@ -278,6 +293,22 @@ test_content = <<~'RUBY'
       expect(Product.new("Laptop", 999)).to eq(Product.new("Laptop", 899))
     end
     
+    it "custom class object comparison" do
+      class Product
+        attr_reader :name, :price, :stock
+        
+        def initialize(name, price, stock)
+          @name = name
+          @price = price
+          @stock = stock
+        end
+      end
+      
+      product1 = Product.new("Laptop", 999.99, 5)
+      product2 = Product.new("Laptop", 899.99, 5)
+      expect(product1).to eq(product2)
+    end
+    
     # Metadata Examples
     it "test with metadata", :slow, :db, priority: :high do
       expect(true).to eq(false)
@@ -350,13 +381,13 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
       "Predicate Matchers" => ["be_empty", "have_key"],
       "Collection Matchers" => ["include", "include with multiple items", "include with hash", "start_with", "end_with", "match (regex)", "contain_exactly", "match_array", "all"],
       "String Matchers" => ["match with string"],
-      "Change Matchers" => ["change", "change by"],
+      "Change Matchers" => ["change", "change by", "change by_at_least", "change by_at_most"],
       "Output Matchers" => ["output to stdout", "output to stderr"],
-      "Exception Matchers" => ["raise_error", "raise_error with message", "raise_error when none raised"],
+      "Exception Matchers" => ["raise_error", "raise_error with message", "raise_error when none raised", "unexpected exception (outside expect block)"],
       "Other Matchers" => ["throw_symbol", "exist", "cover", "cover multiple values", "respond_to", "respond_to with arguments", "have_attributes", "satisfy", "satisfy with complex block"],
       "Compound & Negated" => ["and", "or", "not_to eq", "not_to include"],
       "Custom Messages" => ["custom failure message", "custom message with block"],
-      "Complex Objects" => ["struct comparison", "test with metadata", "custom object with many instance variables"],
+      "Complex Objects" => ["struct comparison", "custom class object comparison", "test with metadata", "custom object with many instance variables"],
       "Fuzzy Matchers" => ["a_string_matching", "a_hash_including", "a_collection_containing_exactly", "an_instance_of", "include with hash conditions"],
       "Yield Matchers" => ["yield_control", "yield_with_args"]
     }
