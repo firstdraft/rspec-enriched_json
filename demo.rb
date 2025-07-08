@@ -144,7 +144,7 @@ test_content = <<~'RUBY'
     it "match (regex)" do
       expect("user@example.com").to match(/admin@/)
     end
-    
+
     it "contain_exactly" do
       expect([1, 2, 3]).to contain_exactly(1, 2, 4)
     end
@@ -162,6 +162,10 @@ test_content = <<~'RUBY'
       expect("Hello").to match("Goodbye")
     end
     
+    it "unescaping quotes in actual" do
+      expect("\"Hello, ---world\"").to match("Hello, world")
+    end
+
     # Change Matchers
     it "change" do
       x = 5
@@ -380,7 +384,7 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
       "Truthiness Matchers" => ["be_truthy", "be_falsey / be_falsy", "be_nil"],
       "Predicate Matchers" => ["be_empty", "have_key"],
       "Collection Matchers" => ["include", "include with multiple items", "include with hash", "start_with", "end_with", "match (regex)", "contain_exactly", "match_array", "all"],
-      "String Matchers" => ["match with string"],
+      "String Matchers" => ["match with string", "unescaping quotes in actual"],
       "Change Matchers" => ["change", "change by", "change by_at_least", "change by_at_most"],
       "Output Matchers" => ["output to stdout", "output to stderr"],
       "Exception Matchers" => ["raise_error", "raise_error with message", "raise_error when none raised", "unexpected exception (outside expect block)"],

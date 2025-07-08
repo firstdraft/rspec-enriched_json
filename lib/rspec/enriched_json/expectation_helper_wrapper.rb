@@ -32,7 +32,9 @@ module RSpec
           when nil, Numeric, TrueClass, FalseClass
             value
           when String
-            truncate_string(value)
+            unescape_string(
+              truncate_string(value)
+            )
           when Symbol
             value.to_s
           when Array
@@ -77,6 +79,14 @@ module RSpec
         def truncate_string(str)
           return str if str.length <= MAX_STRING_LENGTH
           "#{str[0...MAX_STRING_LENGTH]}... (truncated)"
+        end
+
+        def unescape_string(str)
+          if str.start_with?('"') && str.end_with?('"')
+            return str.undump
+          else
+            str
+          end
         end
 
         def safe_inspect(obj)
