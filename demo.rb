@@ -144,7 +144,7 @@ test_content = <<~'RUBY'
     it "match (regex)" do
       expect("user@example.com").to match(/admin@/)
     end
-
+    
     it "contain_exactly" do
       expect([1, 2, 3]).to contain_exactly(1, 2, 4)
     end

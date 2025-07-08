@@ -49,14 +49,14 @@ RSpec.describe "diffable" do
       test_content = <<~RUBY
         RSpec.describe "String diff" do
           it "compares strings" do
-            expect('"Hello, ---world"').to match("Hello, world")  
+            expect("\\"Hello, ---world\\"").to match("Hello, world")
           end
         end
       RUBY
 
       output = run_formatter_with_content(test_content)
-      # p output
       details = output["examples"].first["details"]
+
       expect(details["expected"]).to eq("Hello, world")
       expect(details["actual"]).to eq("Hello, ---world")
     end
