@@ -45,6 +45,22 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
+    it "captures the unescaped string string actual output" do
+      test_content = <<~RUBY
+        RSpec.describe "String diff" do
+          it "compares strings" do
+            expect("\\"Hello, ---world\\"").to match("Hello, world")
+          end
+        end
+      RUBY
+
+      output = run_formatter_with_content(test_content)
+      details = output["examples"].first["details"]
+
+      expect(details["expected"]).to eq("Hello, world")
+      expect(details["actual"]).to eq("Hello, ---world")
+    end
+
     it "marks array comparisons as diffable" do
       test_content = <<~RUBY
         RSpec.describe "Array diff" do
