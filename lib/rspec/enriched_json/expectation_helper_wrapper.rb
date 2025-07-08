@@ -29,8 +29,10 @@ module RSpec
           return "[Max depth exceeded]" if depth > MAX_SERIALIZATION_DEPTH
 
           case value
-          when nil, Numeric, TrueClass, FalseClass
+          when Numeric, TrueClass, FalseClass
             value
+          when nil
+            value.inspect
           when String
             unescape_string_double_quotes(
               truncate_string(value)
