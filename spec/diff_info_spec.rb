@@ -89,6 +89,22 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
+    it "retains symbols instead of converting to strings" do
+      test_content = <<~RUBY
+        RSpec.describe "Symbol diff" do
+          it "compares symbols" do
+            expect(:foo).to eq(:bar)
+          end
+        end
+      RUBY
+
+      output = run_formatter_with_content(test_content)
+      details = output["examples"].first["details"]
+
+      expect(details["expected"]).to eq(":bar")
+      expect(details["actual"]).to eq(":foo")
+    end
+
     it "marks different type comparisons as diffable when matcher says so" do
       test_content = <<~RUBY
         RSpec.describe "Type mismatch" do

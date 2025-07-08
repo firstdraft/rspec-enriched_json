@@ -36,7 +36,7 @@ module RSpec
               truncate_string(value)
             )
           when Symbol
-            value.to_s
+            value.inspect
           when Array
             return "[Large array: #{value.size} items]" if value.size > MAX_ARRAY_SIZE
             value.map { |v| serialize_value(v, depth + 1) }
