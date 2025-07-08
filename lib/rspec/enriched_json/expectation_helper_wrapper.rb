@@ -32,7 +32,7 @@ module RSpec
           when nil, Numeric, TrueClass, FalseClass
             value
           when String
-            unescape_string(
+            unescape_string_double_quotes(
               truncate_string(value)
             )
           when Symbol
@@ -81,7 +81,7 @@ module RSpec
           "#{str[0...MAX_STRING_LENGTH]}... (truncated)"
         end
 
-        def unescape_string(str)
+        def unescape_string_double_quotes(str)
           if str.start_with?('"') && str.end_with?('"')
             return str.undump
           else
