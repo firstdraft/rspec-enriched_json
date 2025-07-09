@@ -202,4 +202,12 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(false)
     end
   end
+
+  it "removes diff from the message if expected and actual are present" do
+    expect("Your account balance is: -50").to match(/Your account balance is: [1-9]\d*/)
+  rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
+    expect(e.message).to include("expected \"Your account balance is: -50\"")
+    expect(e.message).to include("to match /Your account balance is:")
+    expect(e.message).not_to include("Diff:")
+  end
 end

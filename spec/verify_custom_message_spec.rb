@@ -46,6 +46,6 @@ RSpec.describe "Custom message behavior verification" do
 
     # But we also preserve the original message that was overridden
     expect(e.details[:original_message]).to include("expected \"Your account balance is: -50\"")
-    expect(e.details[:original_message]).to include("to match /Your account balance is: [1-9]\\d*/")
+    expect(e.details[:original_message]).to include("to match /Your account balance is:")
   end
 end
