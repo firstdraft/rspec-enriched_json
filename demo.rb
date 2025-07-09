@@ -52,6 +52,14 @@ test_content = <<~'RUBY'
       }
       expect(actual).to eq(expected)
     end
+
+    it "eq with array of symbols" do
+      expect([:name, :age]).to eq([:name])
+    end
+
+    it "eq with nil" do
+      expect("Alice").to eq(nil)
+    end
     
     # Identity Matchers
     it "be (object identity)" do
@@ -377,7 +385,7 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
 
     # Group examples by category for better organization
     categories = {
-      "Basic Equality Matchers" => ["eq with strings", "eq with numbers", "eq with arrays", "eq with hashes", "eq with nested structures"],
+      "Basic Equality Matchers" => ["eq with strings", "eq with numbers", "eq with arrays", "eq with hashes", "eq with nested structures", "eq with array of symbols", "eq with nil"],
       "Identity Matchers" => ["be (object identity)", "equal (alias for be)"],
       "Comparison Matchers" => ["be >", "be <", "be >=", "be <=", "be_between", "be_within"],
       "Type Matchers" => ["be_a / be_kind_of", "be_an_instance_of"],
