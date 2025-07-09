@@ -29,14 +29,16 @@ module RSpec
           return "[Max depth exceeded]" if depth > MAX_SERIALIZATION_DEPTH
 
           case value
-          when nil, Numeric, TrueClass, FalseClass
+          when Numeric, TrueClass, FalseClass
             value
           when String
             unescape_string_double_quotes(
               truncate_string(value)
             )
           when Symbol
-            value.to_s
+            serialize_object(value)
+          when nil
+            serialize_object(value)
           when Array
             return "[Large array: #{value.size} items]" if value.size > MAX_ARRAY_SIZE
             value.map { |v| serialize_value(v, depth + 1) }
