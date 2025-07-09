@@ -31,8 +31,8 @@ module RSpec
 
                 if hash.key?(:details) && hash[:details].key?(:expected) && hash[:details].key?(:actual)
                   exception_message = hash[:exception][:message]
-                  if exception_message.match?(/\nDiff:/)
-                    hash[:exception][:message] = exception_message.lines.first.chomp
+                  if exception_message.include?("\nDiff:")
+                    hash[:exception][:message] = exception_message.sub(/Diff:.*/m, "").strip
                   end
                 end
               end
