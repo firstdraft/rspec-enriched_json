@@ -56,4 +56,24 @@ RSpec.describe "Edge case handling" do
       expect(e.message).to eq("Cannot inspect!")
     end
   end
+
+  context "handling Ruby literals" do
+    it "serializes nil" do
+      expect("Alice").to eq(nil)
+    rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
+      # Should not crash on invalid encoding
+      expect(e.details[:expected][:class]).to eq("NilClass")
+      expect(e.details[:expected][:inspect]).to eq("nil")
+      expect(e.details[:expected][:to_s]).to eq("")
+    end
+
+    it "serializes symbols" do
+      expect(:name).to eq(:age)
+    rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
+      # Should not crash on invalid encoding
+      expect(e.details[:expected][:class]).to eq("Symbol")
+      expect(e.details[:expected][:inspect]).to eq(":age")
+      expect(e.details[:expected][:to_s]).to eq("age")
+    end
+  end
 end
