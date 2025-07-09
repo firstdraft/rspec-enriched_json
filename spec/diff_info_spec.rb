@@ -45,7 +45,7 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
-    it "captures the unescaped string string actual output" do
+    it "captures the unescaped string actual output" do
       test_content = <<~RUBY
         RSpec.describe "String diff" do
           it "compares strings" do
