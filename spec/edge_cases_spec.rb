@@ -62,7 +62,6 @@ RSpec.describe "Edge case handling" do
       expect("Alice").to eq(nil)
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
       # Should not crash on invalid encoding
-      puts e.details
       expect(e.details[:expected]["class"]).to eq("NilClass")
       expect(e.details[:expected]["inspect"]).to eq("nil")
       expect(e.details[:expected]["to_s"]).to eq("")
