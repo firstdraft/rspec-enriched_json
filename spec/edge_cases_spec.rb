@@ -21,8 +21,8 @@ RSpec.describe "Edge case handling" do
     expect { raise "error" }.not_to raise_error
   rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
     # Should handle gracefully with nil values
-    expect(e.details[:expected]).to be_nil
-    expect(e.details[:actual]).to be_nil
+    expect(e.details[:expected]["class"]).to eq("NilClass")
+    expect(e.details[:actual]["class"]).to eq("NilClass")
   end
 
   it "handles encoding issues" do
@@ -62,18 +62,19 @@ RSpec.describe "Edge case handling" do
       expect("Alice").to eq(nil)
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
       # Should not crash on invalid encoding
-      expect(e.details[:expected][:class]).to eq("NilClass")
-      expect(e.details[:expected][:inspect]).to eq("nil")
-      expect(e.details[:expected][:to_s]).to eq("")
+      puts e.details
+      expect(e.details[:expected]["class"]).to eq("NilClass")
+      expect(e.details[:expected]["inspect"]).to eq("nil")
+      expect(e.details[:expected]["to_s"]).to eq("")
     end
 
     it "serializes symbols" do
       expect(:name).to eq(:age)
     rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
       # Should not crash on invalid encoding
-      expect(e.details[:expected][:class]).to eq("Symbol")
-      expect(e.details[:expected][:inspect]).to eq(":age")
-      expect(e.details[:expected][:to_s]).to eq("age")
+      expect(e.details[:expected]["class"]).to eq("Symbol")
+      expect(e.details[:expected]["inspect"]).to eq(":age")
+      expect(e.details[:expected]["to_s"]).to eq("age")
     end
   end
 end

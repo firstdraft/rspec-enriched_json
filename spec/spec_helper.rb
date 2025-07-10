@@ -2,6 +2,8 @@
 
 require "bundler/setup"
 require "rspec/enriched_json"
+require "tempfile"
+require "json"
 
 RSpec.configure do |config|
   config.color = true
@@ -23,4 +25,29 @@ RSpec.configure do |config|
     mocks.verify_doubled_constant_names = true
     mocks.verify_partial_doubles = true
   end
+end
+
+def run_formatter_with_content(test_content)
+  test_file = Tempfile.new(["test", ".rb"])
+  test_file.write(test_content)
+  test_file.flush
+
+  output_file = Tempfile.new(["output", ".json"])
+
+  # Run RSpec with our formatter
+  system(
+    "bundle", "exec", "rspec", test_file.path,
+    "--format", "RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter",
+    "--out", output_file.path,
+    "-r", "./lib/rspec/enriched_json",
+    err: File::NULL,
+    out: File::NULL
+  )
+
+  JSON.parse(File.read(output_file.path))
+ensure
+  test_file&.close
+  test_file&.unlink
+  output_file&.close
+  output_file&.unlink
 end
