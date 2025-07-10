@@ -122,7 +122,7 @@ module RSpec
         details = {
           expected: Serializer.serialize_value(expected_raw),
           actual: Serializer.serialize_value(actual_raw),
-          original_message: original_message,  # Only populated when custom message overrides it
+          original_message: original_message, # Only populated when custom message overrides it
           matcher_name: matcher.class.name,
           diffable: values_diffable?(expected_raw, actual_raw, matcher)
         }

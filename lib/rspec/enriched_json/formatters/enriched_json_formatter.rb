@@ -28,6 +28,13 @@ module RSpec
                 if e.is_a?(RSpec::EnrichedJson::EnrichedExpectationNotMetError) && e.details
                   hash[:details] = safe_structured_data(e.details)
                 end
+
+                if hash.key?(:details) && hash[:details].key?(:expected) && hash[:details].key?(:actual)
+                  exception_message = hash[:exception][:message]
+                  if exception_message.include?("\nDiff:")
+                    hash[:exception][:message] = exception_message.sub(/Diff:.*/m, "").strip
+                  end
+                end
               end
             end
           end

@@ -37,4 +37,15 @@ RSpec.describe "Custom message behavior verification" do
       expect(e.details[:original_message]).to be_nil
     end
   end
+
+  it "removes diff from the custom message if expected and actual are present" do
+    expect("Your account balance is: -50").to match(/Your account balance is: [1-9]\d*/), "Insufficient funds"
+  rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
+    # The exception message should be the custom message
+    expect(e.message).to eq("Insufficient funds")
+
+    # But we also preserve the original message that was overridden
+    expect(e.details[:original_message]).to include("expected \"Your account balance is: -50\"")
+    expect(e.details[:original_message]).to include("to match /Your account balance is:")
+  end
 end
