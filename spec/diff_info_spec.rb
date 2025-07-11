@@ -1,35 +1,8 @@
 # frozen_string_literal: true
 
 require "spec_helper"
-require "tempfile"
-require "json"
 
 RSpec.describe "diffable" do
-  def run_formatter_with_content(test_content)
-    test_file = Tempfile.new(["test", ".rb"])
-    test_file.write(test_content)
-    test_file.flush
-
-    output_file = Tempfile.new(["output", ".json"])
-
-    # Run RSpec with our formatter
-    system(
-      "bundle", "exec", "rspec", test_file.path,
-      "--format", "RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter",
-      "--out", output_file.path,
-      "-r", "./lib/rspec/enriched_json",
-      err: File::NULL,
-      out: File::NULL
-    )
-
-    JSON.parse(File.read(output_file.path))
-  ensure
-    test_file&.close
-    test_file&.unlink
-    output_file&.close
-    output_file&.unlink
-  end
-
   describe "diffable detection" do
     it "marks string comparisons as diffable" do
       test_content = <<~RUBY
@@ -204,10 +177,19 @@ RSpec.describe "diffable" do
   end
 
   it "removes diff from the message if expected and actual are present" do
-    expect("Your account balance is: -50").to match(/Your account balance is: [1-9]\d*/)
-  rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
-    expect(e.message).to include("expected \"Your account balance is: -50\"")
-    expect(e.message).to include("to match /Your account balance is:")
-    expect(e.message).not_to include("Diff:")
+    test_content = <<~RUBY
+      RSpec.describe "Account balance" do
+        it "matches a sub-string" do
+          expect("Your account balance is: -50").to match(/Your account balance is: [1-9]\d*/)
+        end
+      end
+    RUBY
+
+    output = run_formatter_with_content(test_content)
+    message = output["examples"].first["exception"]["message"]
+
+    expect(message).to include("expected \"Your account balance is: -50\"")
+    expect(message).to include("to match /Your account balance is:")
+    expect(message).not_to include("Diff:")
   end
 end
