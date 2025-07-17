@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "json"
+require "oj"
 require "rspec/expectations"
 require "rspec/support/differ"
 
@@ -34,95 +35,32 @@ module RSpec
       module Serializer
         extend self
 
-        MAX_SERIALIZATION_DEPTH = 5
-        MAX_ARRAY_SIZE = 100
-        MAX_HASH_SIZE = 100
-        MAX_STRING_LENGTH = 1000
+        # Configure Oj options - mixed safe/unsafe for best output
+        OJ_OPTIONS = {
+          mode: :object,           # Full Ruby object serialization
+          circular: true,          # Handle circular references
+          class_cache: false,      # More predictable behavior
+          create_additions: false, # Don't use JSON additions (safety)
+          symbol_keys: false,      # Preserve symbols as symbols
+          auto_define: false,      # DON'T auto-create classes (safety)
+          create_id: nil,          # Disable create_id entirely (safety)
+          use_to_json: false,      # Don't call to_json (safety + consistency)
+          use_as_json: false,      # Don't call as_json (safety + consistency)
+          use_raw_json: false,     # Don't use raw_json (safety)
+          bigdecimal_as_decimal: true, # Preserve BigDecimal precision
+          nan: :word               # NaN → "NaN", Infinity → "Infinity"
+        }
 
         def serialize_value(value, depth = 0)
-          return "[Max depth exceeded]" if depth > MAX_SERIALIZATION_DEPTH
-
-          case value
-          when Numeric, TrueClass, FalseClass
-            value
-          when String
-            unescape_string_double_quotes(
-              truncate_string(value)
-            )
-          when Symbol
-            serialize_object(value)
-          when nil
-            serialize_object(value)
-          when Array
-            return "[Large array: #{value.size} items]" if value.size > MAX_ARRAY_SIZE
-            value.map { |v| serialize_value(v, depth + 1) }
-          when Hash
-            return "[Large hash: #{value.size} keys]" if value.size > MAX_HASH_SIZE
-            value.transform_values { |v| serialize_value(v, depth + 1) }
-          else
-            serialize_object(value, depth)
-          end
+          # Let Oj handle everything - it's faster and more consistent
+          Oj.dump(value, OJ_OPTIONS)
         rescue => e
+          # Fallback for truly unserializable objects
           {
-            "class" => value.class.name,
-            "serialization_error" => e.message
+            "_serialization_error" => e.message,
+            "_class" => value.class.name,
+            "_to_s" => (value.to_s rescue "[to_s failed]")
           }
-        end
-
-        def serialize_object(obj, depth = 0)
-          result = {
-            "class" => obj.class.name,
-            "inspect" => safe_inspect(obj),
-            "to_s" => safe_to_s(obj)
-          }
-
-          # Handle Structs specially
-          if obj.is_a?(Struct)
-            result["struct_values"] = obj.to_h.transform_values { |v| serialize_value(v, depth + 1) }
-          end
-
-          # Include instance variables only for small objects
-          ivars = obj.instance_variables
-          if ivars.any? && ivars.length <= 10
-            result["instance_variables"] = ivars.each_with_object({}) do |ivar, hash|
-              hash[ivar.to_s] = serialize_value(obj.instance_variable_get(ivar), depth + 1)
-            end
-          end
-
-          result
-        end
-
-        def truncate_string(str)
-          return str if str.length <= MAX_STRING_LENGTH
-          "#{str[0...MAX_STRING_LENGTH]}... (truncated)"
-        end
-
-        def unescape_string_double_quotes(str)
-          if str.start_with?('"') && str.end_with?('"')
-            begin
-              # Only undump if it's a valid dumped string
-              # Check if the string is properly escaped by attempting undump
-              str.undump
-            rescue RuntimeError => e
-              # If undump fails, just return the original string
-              # This handles cases where the string has quotes but isn't a valid dump format
-              str
-            end
-          else
-            str
-          end
-        end
-
-        def safe_inspect(obj)
-          truncate_string(obj.inspect)
-        rescue => e
-          "[inspect failed: #{e.class}]"
-        end
-
-        def safe_to_s(obj)
-          truncate_string(obj.to_s)
-        rescue => e
-          "[to_s failed: #{e.class}]"
         end
       end
 
