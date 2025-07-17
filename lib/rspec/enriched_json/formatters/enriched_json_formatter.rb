@@ -35,6 +35,13 @@ module RSpec
                     hash[:exception][:message] = exception_message.sub(/Diff:.*/m, "").strip
                   end
                 end
+              else
+                # For passing tests, check if we have captured values
+                key = "#{notification.example.location}:#{notification.example.description}"
+                if RSpec::EnrichedJson.all_test_values.key?(key)
+                  captured_values = RSpec::EnrichedJson.all_test_values[key]
+                  hash[:details] = safe_structured_data(captured_values)
+                end
               end
             end
           end

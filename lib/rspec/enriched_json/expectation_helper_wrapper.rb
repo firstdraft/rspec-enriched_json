@@ -6,6 +6,17 @@ require "rspec/support/differ"
 
 module RSpec
   module EnrichedJson
+    # Storage for all test values (pass or fail)
+    @all_test_values = {}
+    
+    def self.all_test_values
+      @all_test_values
+    end
+    
+    def self.clear_test_values
+      @all_test_values = {}
+    end
+    
     # Universal wrapper to catch ALL matchers and attach structured data
     module ExpectationHelperWrapper
       MAX_SERIALIZATION_DEPTH = 5
@@ -14,6 +25,9 @@ module RSpec
       MAX_STRING_LENGTH = 1000
       def self.install!
         RSpec::Expectations::ExpectationHelper.singleton_class.prepend(self)
+        # Also hook into the expectation handlers to capture ALL values
+        RSpec::Expectations::PositiveExpectationHandler.singleton_class.prepend(PositiveHandlerWrapper)
+        RSpec::Expectations::NegativeExpectationHandler.singleton_class.prepend(NegativeHandlerWrapper)
       end
 
       # Make serialize_value accessible for other components
@@ -266,6 +280,61 @@ module RSpec
       rescue
         # If diff generation fails, return nil rather than crashing
         nil
+      end
+    end
+    
+    # Wrapper for positive expectations to capture ALL values
+    module PositiveHandlerWrapper
+      def handle_matcher(actual, initial_matcher, custom_message=nil, &block)
+        result = super
+        
+        # Capture values for ALL tests (pass or fail)
+        if initial_matcher && RSpec.current_example
+          begin
+            expected_value = initial_matcher.respond_to?(:expected) ? initial_matcher.expected : nil
+            actual_value = initial_matcher.respond_to?(:actual) ? initial_matcher.actual : actual
+            
+            key = "#{RSpec.current_example.location}:#{RSpec.current_example.description}"
+            RSpec::EnrichedJson.all_test_values[key] = {
+              expected: ExpectationHelperWrapper::Serializer.serialize_value(expected_value),
+              actual: ExpectationHelperWrapper::Serializer.serialize_value(actual_value),
+              matcher_name: initial_matcher.class.name,
+              passed: result.nil? ? false : true
+            }
+          rescue => e
+            # Silently ignore errors in value capture
+          end
+        end
+        
+        result
+      end
+    end
+    
+    # Wrapper for negative expectations to capture ALL values
+    module NegativeHandlerWrapper
+      def handle_matcher(actual, initial_matcher, custom_message=nil, &block)
+        result = super
+        
+        # Capture values for ALL tests (pass or fail)
+        if initial_matcher && RSpec.current_example
+          begin
+            expected_value = initial_matcher.respond_to?(:expected) ? initial_matcher.expected : nil
+            actual_value = initial_matcher.respond_to?(:actual) ? initial_matcher.actual : actual
+            
+            key = "#{RSpec.current_example.location}:#{RSpec.current_example.description}"
+            RSpec::EnrichedJson.all_test_values[key] = {
+              expected: ExpectationHelperWrapper::Serializer.serialize_value(expected_value),
+              actual: ExpectationHelperWrapper::Serializer.serialize_value(actual_value),
+              matcher_name: initial_matcher.class.name,
+              passed: result.nil? ? false : true,
+              negated: true
+            }
+          rescue => e
+            # Silently ignore errors in value capture
+          end
+        end
+        
+        result
       end
     end
   end
