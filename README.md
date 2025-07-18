@@ -164,6 +164,16 @@ The gem works by:
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests.
 
+This project uses [StandardRB](https://github.com/standardrb/standard) for code formatting and style. Before committing:
+
+```bash
+# Check for style violations
+bundle exec standardrb
+
+# Auto-fix style violations
+bundle exec standardrb --fix
+```
+
 ## Performance Considerations
 
 The enriched formatter adds minimal overhead:

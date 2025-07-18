@@ -248,7 +248,7 @@ module RSpec
               expected: ExpectationHelperWrapper::Serializer.serialize_value(expected_value),
               actual: ExpectationHelperWrapper::Serializer.serialize_value(actual_value),
               matcher_name: initial_matcher.class.name,
-              passed: result.nil? ? false : true
+              passed: !result.nil?
             }
           rescue
             # Silently ignore errors in value capture
@@ -275,7 +275,7 @@ module RSpec
               expected: ExpectationHelperWrapper::Serializer.serialize_value(expected_value),
               actual: ExpectationHelperWrapper::Serializer.serialize_value(actual_value),
               matcher_name: initial_matcher.class.name,
-              passed: result.nil? ? false : true,
+              passed: !result.nil?,
               negated: true
             }
           rescue

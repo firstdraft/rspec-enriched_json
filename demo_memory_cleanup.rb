@@ -38,7 +38,7 @@ RSpec.configure do |config|
 end
 
 # Run the tests
-status = RSpec::Core::Runner.run([test_file.path])
+RSpec::Core::Runner.run([test_file.path])
 
 puts "\nTest values after individual tests ran: #{RSpec::EnrichedJson.all_test_values.size} entries"
 puts "Keys captured: #{RSpec::EnrichedJson.all_test_values.keys}"
