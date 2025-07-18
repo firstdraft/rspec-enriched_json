@@ -35,8 +35,8 @@ RSpec.describe "RSpec::EnrichedJson Integration" do
     example = result["examples"].first
     expect(example["status"]).to eq("failed")
     expect(example["details"]).to include(
-      "expected" => 3,
-      "actual" => 2,
+      "expected" => "3",
+      "actual" => "2",
       "matcher_name" => "RSpec::Matchers::BuiltIn::Eq"
     )
   end
@@ -61,7 +61,7 @@ RSpec.describe "RSpec::EnrichedJson Integration" do
     expect(example["details"]["original_message"]).to include("expected: >= 100")
   end
 
-  it "does not add structured data for passing tests" do
+  it "adds structured data for passing tests" do
     spec_content = <<~RUBY
       require 'rspec/enriched_json'
       
@@ -76,7 +76,9 @@ RSpec.describe "RSpec::EnrichedJson Integration" do
 
     example = result["examples"].first
     expect(example["status"]).to eq("passed")
-    expect(example).not_to have_key("details")
+    # We now capture values for passing tests too
+    expect(example).to have_key("details")
+    expect(example["details"]["passed"]).to eq(true)
   end
 
   it "handles regular exceptions without structured data" do
