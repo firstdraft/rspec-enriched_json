@@ -21,6 +21,7 @@
 # Other gems for AI context
 /diffy/
 /super_diff/
+/fuzzy_match_poc/
 
 # Bundler
 Gemfile.lock
