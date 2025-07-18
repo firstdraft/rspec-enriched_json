@@ -116,11 +116,8 @@ module RSpec
 
         def safe_serialize(value)
           # Delegate to the existing serialization logic in ExpectationHelperWrapper
-          # This already handles Regexp objects specially
-          serialized = RSpec::EnrichedJson::ExpectationHelperWrapper::Serializer.serialize_value(value)
-
-          # The Serializer returns JSON strings, so we need to double-encode for the formatter
-          serialized.to_json
+          # This already handles Regexp objects specially and returns JSON
+          RSpec::EnrichedJson::ExpectationHelperWrapper::Serializer.serialize_value(value)
         rescue => e
           # Better error recovery - provide context about what failed
           begin
