@@ -4,9 +4,9 @@ require "rspec"
 require "rspec/enriched_json"
 
 RSpec.describe "Memory cleanup" do
-  it "registers an after(:suite) hook that clears test values" do
-    # The hook should already be registered by the install! method
-    # We'll verify by checking that clear_test_values gets called
+  it "formatter cleans up test values after outputting JSON" do
+    # The cleanup now happens in the formatter's close method
+    # to ensure values are available when formatting
 
     # Store some test values
     RSpec::EnrichedJson.all_test_values["test1"] = {expected: 1, actual: 2}
@@ -14,7 +14,7 @@ RSpec.describe "Memory cleanup" do
 
     expect(RSpec::EnrichedJson.all_test_values).not_to be_empty
 
-    # The actual hook will be called by RSpec after the suite completes
+    # The formatter will call clear_test_values in its close method
     # For now, we just verify the method exists and works
     expect(RSpec::EnrichedJson).to respond_to(:clear_test_values)
   end

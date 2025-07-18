@@ -37,7 +37,7 @@ module RSpec
                 end
               else
                 # For passing tests, check if we have captured values
-                key = "#{notification.example.location}:#{notification.example.description}"
+                key = notification.example.id
                 if RSpec::EnrichedJson.all_test_values.key?(key)
                   captured_values = RSpec::EnrichedJson.all_test_values[key]
                   hash[:details] = safe_structured_data(captured_values)
@@ -146,6 +146,13 @@ module RSpec
           rescue
             "Unable to serialize"
           end
+        end
+
+        # Override close to clean up memory after formatter is done
+        def close(_notification)
+          super
+          # Clean up captured test values to prevent memory leaks
+          RSpec::EnrichedJson.clear_test_values
         end
       end
     end
