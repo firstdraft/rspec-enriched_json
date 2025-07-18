@@ -85,8 +85,8 @@ module RSpec
         super
       rescue RSpec::Expectations::ExpectationNotMetError => e
         # Extract raw values for diff analysis
-        expected_raw = extract_value(matcher, :expected)
-        actual_raw = extract_value(matcher, :actual)
+        expected_raw = extract_value(matcher, :expected, failure_message_method)
+        actual_raw = extract_value(matcher, :actual, failure_message_method)
 
         # Collect structured data
         details = {
@@ -113,13 +113,33 @@ module RSpec
 
       private
 
-      def extract_value(matcher, method_name)
-        return nil unless matcher.respond_to?(method_name)
+      def extract_value(matcher, method_name, failure_message_method = nil)
+        # Special handling for predicate matchers (be_* and have_*)
+        if matcher.is_a?(RSpec::Matchers::BuiltIn::BePredicate) || matcher.is_a?(RSpec::Matchers::BuiltIn::Has)
+          case method_name
+          when :expected
+            # For predicate matchers, expected depends on whether it's positive or negative
+            # - Positive (failure_message): expects true
+            # - Negative (failure_message_when_negated): expects false
+            !(failure_message_method == :failure_message_when_negated)
+          when :actual
+            # For predicate matchers, actual is the result of the predicate
+            if matcher.instance_variable_defined?(:@predicate_result)
+              matcher.instance_variable_get(:@predicate_result)
+            else
+              # If predicate hasn't been called yet, we can't get the actual value
+              nil
+            end
+          end
+        else
+          # Standard handling for all other matchers
+          return nil unless matcher.respond_to?(method_name)
 
-        value = matcher.send(method_name)
-        # Don't return nil if the value itself is nil
-        # Only return nil if the value is the matcher itself (self-referential)
-        (value == matcher && !value.nil?) ? nil : value
+          value = matcher.send(method_name)
+          # Don't return nil if the value itself is nil
+          # Only return nil if the value is the matcher itself (self-referential)
+          (value == matcher && !value.nil?) ? nil : value
+        end
       rescue
         nil
       end
@@ -237,8 +257,30 @@ module RSpec
         return unless initial_matcher && RSpec.current_example
 
         begin
-          expected_value = initial_matcher.respond_to?(:expected) ? initial_matcher.expected : nil
-          actual_value = actual
+          # Special handling for predicate matchers
+          if initial_matcher.is_a?(RSpec::Matchers::BuiltIn::BePredicate) || initial_matcher.is_a?(RSpec::Matchers::BuiltIn::Has)
+            # For predicate matchers:
+            # - Expected is true for positive matchers, false for negative
+            # - Actual is the result of the predicate (we need to call matches? first)
+            expected_value = !negated
+
+            # We need to run the matcher to get the predicate result
+            # This is safe because it will be called again by the handler
+            if negated && initial_matcher.respond_to?(:does_not_match?)
+              initial_matcher.does_not_match?(actual)
+            else
+              initial_matcher.matches?(actual)
+            end
+
+            # Now we can get the predicate result
+            actual_value = if initial_matcher.instance_variable_defined?(:@predicate_result)
+              initial_matcher.instance_variable_get(:@predicate_result)
+            end
+          else
+            # Standard handling for other matchers
+            expected_value = initial_matcher.respond_to?(:expected) ? initial_matcher.expected : nil
+            actual_value = actual
+          end
 
           # Use the unique example ID which includes hierarchy
           key = RSpec.current_example.id
