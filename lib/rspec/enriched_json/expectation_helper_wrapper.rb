@@ -94,7 +94,7 @@ module RSpec
           actual: Serializer.serialize_value(actual_raw),
           original_message: original_message, # Only populated when custom message overrides it
           matcher_name: matcher.class.name,
-          diffable: values_diffable?(expected_raw, actual_raw, matcher)
+          diffable: matcher.respond_to?(:diffable?) && matcher.diffable?
         }
 
         # Generate diff if values are diffable
@@ -141,32 +141,6 @@ module RSpec
       end
 
 
-      def values_diffable?(expected, actual, matcher)
-        # First check if the matcher itself declares diffability
-        if matcher.respond_to?(:diffable?)
-          return matcher.diffable?
-        end
-
-        # If either value is nil, not diffable
-        return false if expected.nil? || actual.nil?
-
-        # For different classes, generally not diffable
-        return false unless actual.instance_of?(expected.class)
-
-        # Check if both values are of the same basic diffable type
-        case expected
-        when String, Array, Hash
-          # These types are inherently diffable when compared to same type
-          true
-        else
-          # For other types, they're diffable if they respond to to_s
-          # and their string representations would be meaningful
-          expected.respond_to?(:to_s) && actual.respond_to?(:to_s)
-        end
-      rescue
-        # If any error occurs during checking, assume not diffable
-        false
-      end
 
       def generate_diff(actual, expected)
         # Use RSpec's own differ for consistency
