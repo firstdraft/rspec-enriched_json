@@ -75,16 +75,18 @@ module RSpec
         }
 
         def serialize_value(value, depth = 0)
-          # Special handling for Regexp objects - just use their string representation
+          # Special handling for Regexp objects - use their string representation
+          # Note: Don't call to_json here since Oj.dump already returns JSON
           if value.is_a?(Regexp)
-            return value.inspect.to_json
+            # Return the inspect representation as a JSON string (Oj will quote it)
+            return Oj.dump(value.inspect, mode: :compat)
           end
 
           # Let Oj handle everything else - it's faster and more consistent
           Oj.dump(value, OJ_OPTIONS)
         rescue => e
           # Fallback for truly unserializable objects
-          {
+          Oj.dump({
             "_serialization_error" => e.message,
             "_class" => value.class.name,
             "_to_s" => begin
@@ -92,7 +94,7 @@ module RSpec
             rescue
               "[to_s failed]"
             end
-          }.to_json
+          }, mode: :compat)
         end
       end
 
