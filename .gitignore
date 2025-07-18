@@ -24,6 +24,7 @@
 /fuzzy_match_poc/
 /oj/
 /parallel_tests/
+/amazing_print/
 
 # Bundler
 Gemfile.lock
