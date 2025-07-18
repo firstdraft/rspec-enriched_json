@@ -20,10 +20,6 @@ module RSpec
 
     # Universal wrapper to catch ALL matchers and attach structured data
     module ExpectationHelperWrapper
-      MAX_SERIALIZATION_DEPTH = 5
-      MAX_ARRAY_SIZE = 100
-      MAX_HASH_SIZE = 100
-      MAX_STRING_LENGTH = 1000
       def self.install!
         RSpec::Expectations::ExpectationHelper.singleton_class.prepend(self)
         # Also hook into the expectation handlers to capture ALL values
@@ -37,26 +33,6 @@ module RSpec
       # Make serialize_value accessible for other components
       module Serializer
         extend self
-
-        # Custom handler for Regexp serialization
-        class RegexpWrapper
-          def self.create(source, options)
-            # This is for deserialization - create a Regexp from our custom format
-            Regexp.new(source, options)
-          end
-
-          def self.dump_regexp(regexp)
-            # This returns a raw JSON string that will be included directly
-            {
-              "_regexp_source" => regexp.source,
-              "_regexp_options" => regexp.options
-            }.to_json
-          end
-        end
-
-        # Register Regexp for custom serialization
-        # The dump_regexp method will be called on the RegexpWrapper class
-        Oj.register_odd_raw(Regexp, RegexpWrapper, :create, :dump_regexp)
 
         # Configure Oj options - mixed safe/unsafe for best output
         OJ_OPTIONS = {
@@ -255,40 +231,59 @@ module RSpec
       end
     end
 
-    # Wrapper for positive expectations to capture ALL values
-    module PositiveHandlerWrapper
-      def handle_matcher(actual, initial_matcher, custom_message = nil, &block)
-        # Capture values BEFORE calling super (which might raise)
-        if initial_matcher && RSpec.current_example
-          begin
-            expected_value = initial_matcher.respond_to?(:expected) ? initial_matcher.expected : nil
-            # The 'actual' parameter is the actual value being tested
-            actual_value = actual
+    # Shared logic for capturing test values
+    module HandlerWrapperShared
+      def capture_test_values(actual, initial_matcher, negated: false)
+        return unless initial_matcher && RSpec.current_example
 
-            # Use the unique example ID which includes hierarchy
-            key = RSpec.current_example.id
-            RSpec::EnrichedJson.all_test_values[key] = {
-              expected: ExpectationHelperWrapper::Serializer.serialize_value(expected_value),
-              actual: ExpectationHelperWrapper::Serializer.serialize_value(actual_value),
-              matcher_name: initial_matcher.class.name,
-              passed: nil # Will update after we know the result
-            }
-          rescue => e
-            # Log errors for debugging
-            puts "Error capturing test values: #{e.message}" if ENV["DEBUG"]
+        begin
+          expected_value = initial_matcher.respond_to?(:expected) ? initial_matcher.expected : nil
+          actual_value = actual
+
+          # Use the unique example ID which includes hierarchy
+          key = RSpec.current_example.id
+          RSpec::EnrichedJson.all_test_values[key] = {
+            expected: ExpectationHelperWrapper::Serializer.serialize_value(expected_value),
+            actual: ExpectationHelperWrapper::Serializer.serialize_value(actual_value),
+            matcher_name: initial_matcher.class.name,
+            passed: nil # Will update after we know the result
+          }
+
+          # Add negated flag for negative expectations
+          RSpec::EnrichedJson.all_test_values[key][:negated] = true if negated
+        rescue => e
+          # Log errors using RSpec's warning system if available
+          if defined?(RSpec.configuration) && RSpec.configuration.reporter
+            RSpec.configuration.reporter.message("Warning: Error capturing test values: #{e.message}")
+          elsif ENV["DEBUG"]
+            puts "Error capturing test values: #{e.message}"
           end
         end
+      end
+
+      def mark_as_passed(initial_matcher)
+        return unless initial_matcher && RSpec.current_example
+
+        key = RSpec.current_example.id
+        if RSpec::EnrichedJson.all_test_values[key]
+          RSpec::EnrichedJson.all_test_values[key][:passed] = true
+        end
+      end
+    end
+
+    # Wrapper for positive expectations to capture ALL values
+    module PositiveHandlerWrapper
+      include HandlerWrapperShared
+
+      def handle_matcher(actual, initial_matcher, custom_message = nil, &block)
+        # Capture values BEFORE calling super (which might raise)
+        capture_test_values(actual, initial_matcher, negated: false)
 
         # Now call super and capture result
         result = super
 
         # Update the passed status
-        if initial_matcher && RSpec.current_example
-          key = RSpec.current_example.id
-          if RSpec::EnrichedJson.all_test_values[key]
-            RSpec::EnrichedJson.all_test_values[key][:passed] = true
-          end
-        end
+        mark_as_passed(initial_matcher)
 
         result
       end
@@ -296,39 +291,17 @@ module RSpec
 
     # Wrapper for negative expectations to capture ALL values
     module NegativeHandlerWrapper
+      include HandlerWrapperShared
+
       def handle_matcher(actual, initial_matcher, custom_message = nil, &block)
         # Capture values BEFORE calling super (which might raise)
-        if initial_matcher && RSpec.current_example
-          begin
-            expected_value = initial_matcher.respond_to?(:expected) ? initial_matcher.expected : nil
-            # The 'actual' parameter is the actual value being tested
-            actual_value = actual
-
-            # Use the unique example ID which includes hierarchy
-            key = RSpec.current_example.id
-            RSpec::EnrichedJson.all_test_values[key] = {
-              expected: ExpectationHelperWrapper::Serializer.serialize_value(expected_value),
-              actual: ExpectationHelperWrapper::Serializer.serialize_value(actual_value),
-              matcher_name: initial_matcher.class.name,
-              passed: nil, # Will update after we know the result
-              negated: true
-            }
-          rescue => e
-            # Log errors for debugging
-            puts "Error capturing test values: #{e.message}" if ENV["DEBUG"]
-          end
-        end
+        capture_test_values(actual, initial_matcher, negated: true)
 
         # Now call super and capture result
         result = super
 
         # Update the passed status
-        if initial_matcher && RSpec.current_example
-          key = RSpec.current_example.id
-          if RSpec::EnrichedJson.all_test_values[key]
-            RSpec::EnrichedJson.all_test_values[key][:passed] = true
-          end
-        end
+        mark_as_passed(initial_matcher)
 
         result
       end
