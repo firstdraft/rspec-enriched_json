@@ -18,7 +18,6 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
-
     it "marks array comparisons as diffable" do
       test_content = <<~RUBY
         RSpec.describe "Array diff" do
@@ -62,7 +61,6 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
-
     it "marks nil comparisons as diffable when matcher says so" do
       test_content = <<~RUBY
         RSpec.describe "Nil comparison" do
@@ -101,7 +99,6 @@ RSpec.describe "diffable" do
 
       expect(output["examples"].first["details"]["diffable"]).to eq(false)
     end
-
   end
 
   it "removes diff from the message if expected and actual are present" do
