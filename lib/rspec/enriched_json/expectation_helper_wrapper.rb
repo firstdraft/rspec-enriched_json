@@ -88,13 +88,17 @@ module RSpec
         expected_raw = extract_value(matcher, :expected, failure_message_method)
         actual_raw = extract_value(matcher, :actual, failure_message_method)
 
+        # Determine if this is a negated matcher
+        negated = failure_message_method == :failure_message_when_negated
+
         # Collect structured data
         details = {
           expected: Serializer.serialize_value(expected_raw),
           actual: Serializer.serialize_value(actual_raw),
           original_message: original_message, # Only populated when custom message overrides it
           matcher_name: matcher.class.name,
-          diffable: matcher.respond_to?(:diffable?) && matcher.diffable?
+          diffable: matcher.respond_to?(:diffable?) && matcher.diffable?,
+          negated: negated
         }
 
         # Generate diff if values are diffable
@@ -139,8 +143,6 @@ module RSpec
       rescue
         nil
       end
-
-
 
       def generate_diff(actual, expected)
         # Use RSpec's own differ for consistency

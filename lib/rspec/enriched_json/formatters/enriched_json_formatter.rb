@@ -98,7 +98,6 @@ module RSpec
           hierarchy
         end
 
-
         # Override close to clean up memory after formatter is done
         def close(_notification)
           super
