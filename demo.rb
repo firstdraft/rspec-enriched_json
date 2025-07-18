@@ -178,6 +178,11 @@ test_content = <<~'RUBY'
       expect("\"Hello, ---world\"").to match("Hello, world")
     end
 
+    it "strings with newlines" do
+      output = "\"l appears 1 times\"\n\"o appears 2 times\"\n\"o appears 2 times\"\n\"p appears 1 times\""
+      expect(output).to match("\"l appears 1 times\"\n\"o appears 2 times\"\n\"e appears 1 times\"\n\"p appears 1 times\"")
+    end
+
     # Change Matchers
     it "change" do
       x = 5
@@ -396,7 +401,7 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
       "Truthiness Matchers" => ["be_truthy", "be_falsey / be_falsy", "be_nil"],
       "Predicate Matchers" => ["be_empty", "have_key"],
       "Collection Matchers" => ["include", "include with multiple items", "include with hash", "start_with", "end_with", "match (regex)", "match (regex) with custom message", "contain_exactly", "match_array", "all"],
-      "String Matchers" => ["match with string", "unescaping quotes in actual"],
+      "String Matchers" => ["match with string", "unescaping quotes in actual", "strings with newlines"],
       "Change Matchers" => ["change", "change by", "change by_at_least", "change by_at_most"],
       "Output Matchers" => ["output to stdout", "output to stderr"],
       "Exception Matchers" => ["raise_error", "raise_error with message", "raise_error when none raised", "unexpected exception (outside expect block)"],

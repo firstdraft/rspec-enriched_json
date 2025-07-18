@@ -76,4 +76,31 @@ RSpec.describe "Edge case handling" do
       expect(e.details[:expected]["to_s"]).to eq("age")
     end
   end
+
+  context "handling strings with newlines" do
+    it "handles strings with embedded newlines and quotes" do
+      # This was causing "invalid dumped string" errors before the fix
+      output = "\"l appears 1 times\"\n\"o appears 2 times\"\n\"o appears 2 times\"\n\"p appears 1 times\""
+      expected = "\"l appears 1 times\"\n\"o appears 2 times\"\n\"e appears 1 times\"\n\"p appears 1 times\""
+      
+      expect(output).to eq(expected)
+    rescue RSpec::EnrichedJson::EnrichedExpectationNotMetError => e
+      # Verify the strings are properly serialized without undump errors
+      expect(e.details[:actual]).to be_a(String)
+      expect(e.details[:expected]).to be_a(String)
+      
+      # The actual should contain the newlines (actual newlines, not escaped)
+      expect(e.details[:actual]).to include("\n")
+      expect(e.details[:actual]).to include("l appears 1 times")
+      expect(e.details[:actual]).to include("o appears 2 times")
+      
+      # The expected should also be properly serialized
+      expect(e.details[:expected]).to include("\n")
+      expect(e.details[:expected]).to include("e appears 1 times")
+      
+      # Should not have serialization errors
+      expect(e.details[:actual]).not_to be_a(Hash)
+      expect(e.details[:actual]).not_to include("serialization_error")
+    end
+  end
 end

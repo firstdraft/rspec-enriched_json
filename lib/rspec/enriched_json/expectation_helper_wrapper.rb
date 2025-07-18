@@ -85,7 +85,15 @@ module RSpec
 
         def unescape_string_double_quotes(str)
           if str.start_with?('"') && str.end_with?('"')
-            return str.undump
+            begin
+              # Only undump if it's a valid dumped string
+              # Check if the string is properly escaped by attempting undump
+              str.undump
+            rescue RuntimeError => e
+              # If undump fails, just return the original string
+              # This handles cases where the string has quotes but isn't a valid dump format
+              str
+            end
           else
             str
           end
