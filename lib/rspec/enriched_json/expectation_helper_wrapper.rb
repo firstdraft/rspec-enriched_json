@@ -38,6 +38,26 @@ module RSpec
       module Serializer
         extend self
 
+        # Custom handler for Regexp serialization
+        class RegexpWrapper
+          def self.create(source, options)
+            # This is for deserialization - create a Regexp from our custom format
+            Regexp.new(source, options)
+          end
+          
+          def self.dump_regexp(regexp)
+            # This returns a raw JSON string that will be included directly
+            {
+              "_regexp_source" => regexp.source,
+              "_regexp_options" => regexp.options
+            }.to_json
+          end
+        end
+        
+        # Register Regexp for custom serialization
+        # The dump_regexp method will be called on the RegexpWrapper class
+        Oj.register_odd_raw(Regexp, RegexpWrapper, :create, :dump_regexp)
+
         # Configure Oj options - mixed safe/unsafe for best output
         OJ_OPTIONS = {
           mode: :object,           # Full Ruby object serialization
@@ -55,7 +75,12 @@ module RSpec
         }
 
         def serialize_value(value, depth = 0)
-          # Let Oj handle everything - it's faster and more consistent
+          # Special handling for Regexp objects - just use their string representation
+          if value.is_a?(Regexp)
+            return value.inspect.to_json
+          end
+          
+          # Let Oj handle everything else - it's faster and more consistent
           Oj.dump(value, OJ_OPTIONS)
         rescue => e
           # Fallback for truly unserializable objects
@@ -67,7 +92,7 @@ module RSpec
             rescue
               "[to_s failed]"
             end
-          }
+          }.to_json
         end
       end
 

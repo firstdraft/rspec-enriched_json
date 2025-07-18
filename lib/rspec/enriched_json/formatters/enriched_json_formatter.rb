@@ -116,7 +116,11 @@ module RSpec
 
         def safe_serialize(value)
           # Delegate to the existing serialization logic in ExpectationHelperWrapper
-          RSpec::EnrichedJson::ExpectationHelperWrapper::Serializer.serialize_value(value)
+          # This already handles Regexp objects specially
+          serialized = RSpec::EnrichedJson::ExpectationHelperWrapper::Serializer.serialize_value(value)
+          
+          # The Serializer returns JSON strings, so we need to double-encode for the formatter
+          serialized.to_json
         rescue => e
           # Better error recovery - provide context about what failed
           begin
@@ -131,7 +135,7 @@ module RSpec
             "error_message" => e.message,
             "object_class" => obj_class,
             "fallback_value" => safe_fallback_value(value)
-          }
+          }.to_json
         end
 
         def safe_fallback_value(value)
