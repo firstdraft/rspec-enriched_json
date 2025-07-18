@@ -30,12 +30,8 @@ module RSpec
         RSpec::Expectations::PositiveExpectationHandler.singleton_class.prepend(PositiveHandlerWrapper)
         RSpec::Expectations::NegativeExpectationHandler.singleton_class.prepend(NegativeHandlerWrapper)
 
-        # Register cleanup hook to prevent memory leaks
-        RSpec.configure do |config|
-          config.after(:suite) do
-            RSpec::EnrichedJson.clear_test_values
-          end
-        end
+        # Don't register cleanup here - it runs before formatter!
+        # Cleanup will be handled by the formatter after it's done.
       end
 
       # Make serialize_value accessible for other components
