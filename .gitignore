@@ -22,6 +22,7 @@
 /diffy/
 /super_diff/
 /fuzzy_match_poc/
+/oj/
 
 # Bundler
 Gemfile.lock
