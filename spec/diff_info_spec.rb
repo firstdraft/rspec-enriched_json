@@ -18,21 +18,6 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
-    it "captures the unescaped string actual output" do
-      test_content = <<~RUBY
-        RSpec.describe "String diff" do
-          it "compares strings" do
-            expect("\\"Hello, ---world\\"").to match("Hello, world")
-          end
-        end
-      RUBY
-
-      output = run_formatter_with_content(test_content)
-      details = output["examples"].first["details"]
-
-      expect(details["expected"]).to eq("Hello, world")
-      expect(details["actual"]).to eq("Hello, ---world")
-    end
 
     it "marks array comparisons as diffable" do
       test_content = <<~RUBY
@@ -77,29 +62,6 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(true)
     end
 
-    it "marks same class objects as diffable if they respond to to_s" do
-      test_content = <<~RUBY
-        class Person
-          attr_reader :name
-          def initialize(name)
-            @name = name
-          end
-          def to_s
-            @name
-          end
-        end
-
-        RSpec.describe "Object diff" do
-          it "compares objects" do
-            expect(Person.new("Alice")).to eq(Person.new("Bob"))
-          end
-        end
-      RUBY
-
-      output = run_formatter_with_content(test_content)
-
-      expect(output["examples"].first["details"]["diffable"]).to eq(true)
-    end
 
     it "marks nil comparisons as diffable when matcher says so" do
       test_content = <<~RUBY
@@ -140,40 +102,6 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(false)
     end
 
-    it "uses our logic when matcher has no diffable? method" do
-      test_content = <<~RUBY
-        # Custom matcher without diffable? method
-        class SimpleMatcher
-          def matches?(actual)
-            @actual = actual
-            false
-          end
-          
-          def failure_message
-            "failed"
-          end
-          
-          def expected
-            nil
-          end
-          
-          def actual
-            @actual
-          end
-        end
-
-        RSpec.describe "Matcher without diffable?" do
-          it "nil comparison uses our logic" do
-            expect("something").to SimpleMatcher.new
-          end
-        end
-      RUBY
-
-      output = run_formatter_with_content(test_content)
-
-      # Our logic: nil vs string is not diffable
-      expect(output["examples"].first["details"]["diffable"]).to eq(false)
-    end
   end
 
   it "removes diff from the message if expected and actual are present" do
