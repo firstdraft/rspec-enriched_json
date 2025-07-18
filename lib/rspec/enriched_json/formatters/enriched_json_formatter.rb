@@ -26,7 +26,7 @@ module RSpec
 
                 # Add structured data if available
                 if e.is_a?(RSpec::EnrichedJson::EnrichedExpectationNotMetError) && e.details
-                  hash[:details] = safe_structured_data(e.details)
+                  hash[:details] = e.details
                 end
 
                 if hash.key?(:details) && hash[:details].key?(:expected) && hash[:details].key?(:actual)
@@ -40,7 +40,7 @@ module RSpec
                 key = notification.example.id
                 if RSpec::EnrichedJson.all_test_values.key?(key)
                   captured_values = RSpec::EnrichedJson.all_test_values[key]
-                  hash[:details] = safe_structured_data(captured_values)
+                  hash[:details] = captured_values
                 end
               end
             end
@@ -98,53 +98,6 @@ module RSpec
           hierarchy
         end
 
-        def safe_structured_data(details)
-          # Start with core fields - only use Oj for expected/actual
-          result = {
-            expected: safe_serialize(details[:expected]),
-            actual: safe_serialize(details[:actual])
-          }
-
-          # Add all other fields as regular JSON values
-          details.each do |key, value|
-            next if [:expected, :actual].include?(key)
-            result[key] = value
-          end
-
-          result.compact
-        end
-
-        def safe_serialize(value)
-          # Delegate to the existing serialization logic in ExpectationHelperWrapper
-          # This already handles Regexp objects specially and returns JSON
-          RSpec::EnrichedJson::ExpectationHelperWrapper::Serializer.serialize_value(value)
-        rescue => e
-          # Better error recovery - provide context about what failed
-          begin
-            obj_class = value.class.name
-          rescue
-            obj_class = "Unknown"
-          end
-
-          {
-            "serialization_error" => true,
-            "error_class" => e.class.name,
-            "error_message" => e.message,
-            "object_class" => obj_class,
-            "fallback_value" => safe_fallback_value(value)
-          }.to_json
-        end
-
-        def safe_fallback_value(value)
-          # Try multiple fallback strategies
-          value.to_s
-        rescue
-          begin
-            value.class.name
-          rescue
-            "Unable to serialize"
-          end
-        end
 
         # Override close to clean up memory after formatter is done
         def close(_notification)
