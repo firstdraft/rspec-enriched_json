@@ -118,7 +118,7 @@ module RSpec
           # Delegate to the existing serialization logic in ExpectationHelperWrapper
           # This already handles Regexp objects specially
           serialized = RSpec::EnrichedJson::ExpectationHelperWrapper::Serializer.serialize_value(value)
-          
+
           # The Serializer returns JSON strings, so we need to double-encode for the formatter
           serialized.to_json
         rescue => e

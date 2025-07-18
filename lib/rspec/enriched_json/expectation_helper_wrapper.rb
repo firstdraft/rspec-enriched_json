@@ -44,7 +44,7 @@ module RSpec
             # This is for deserialization - create a Regexp from our custom format
             Regexp.new(source, options)
           end
-          
+
           def self.dump_regexp(regexp)
             # This returns a raw JSON string that will be included directly
             {
@@ -53,7 +53,7 @@ module RSpec
             }.to_json
           end
         end
-        
+
         # Register Regexp for custom serialization
         # The dump_regexp method will be called on the RegexpWrapper class
         Oj.register_odd_raw(Regexp, RegexpWrapper, :create, :dump_regexp)
@@ -79,7 +79,7 @@ module RSpec
           if value.is_a?(Regexp)
             return value.inspect.to_json
           end
-          
+
           # Let Oj handle everything else - it's faster and more consistent
           Oj.dump(value, OJ_OPTIONS)
         rescue => e

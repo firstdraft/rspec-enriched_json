@@ -8,14 +8,16 @@ require "open3"
 
 RSpec.describe "Passing test value capture integration" do
   # Use the same Oj options for loading that we use for dumping
-  OJ_LOAD_OPTIONS = {
-    mode: :object,        # Restore Ruby objects and symbols
-    auto_define: false,   # DON'T auto-create classes (safety)
-    symbol_keys: false,   # Preserve symbols as they were serialized
-    circular: true,       # Handle circular references
-    create_additions: false, # Don't allow custom deserialization (safety)
-    create_id: nil        # Disable create_id (safety)
-  }
+  let(:oj_load_options) do
+    {
+      mode: :object,        # Restore Ruby objects and symbols
+      auto_define: false,   # DON'T auto-create classes (safety)
+      symbol_keys: false,   # Preserve symbols as they were serialized
+      circular: true,       # Handle circular references
+      create_additions: false, # Don't allow custom deserialization (safety)
+      create_id: nil        # Disable create_id (safety)
+    }
+  end
   let(:test_file) do
     Tempfile.new(["passing_test", ".rb"]).tap do |f|
       f.write(<<~RUBY)
@@ -78,15 +80,15 @@ RSpec.describe "Passing test value capture integration" do
     eq_test = examples.find { |e| e["description"] == "captures values for eq matcher" }
     expect(eq_test["status"]).to eq("passed")
     expect(eq_test).to have_key("details")
-    
+
     # Deserialize expected/actual values as the client does:
     # 1. JSON.parse to get the Oj string from double-encoded JSON
     # 2. Oj.load to get the actual Ruby object
     expected_json_str = JSON.parse(eq_test["details"]["expected"])
     actual_json_str = JSON.parse(eq_test["details"]["actual"])
-    
-    expect(Oj.load(expected_json_str, OJ_LOAD_OPTIONS)).to eq(42)
-    expect(Oj.load(actual_json_str, OJ_LOAD_OPTIONS)).to eq(42)
+
+    expect(Oj.load(expected_json_str, oj_load_options)).to eq(42)
+    expect(Oj.load(actual_json_str, oj_load_options)).to eq(42)
     expect(eq_test["details"]["matcher_name"]).to eq("RSpec::Matchers::BuiltIn::Eq")
     expect(eq_test["details"]["passed"]).to be true  # Regular JSON value
 
@@ -94,72 +96,72 @@ RSpec.describe "Passing test value capture integration" do
     be_test = examples.find { |e| e["description"] == "captures values for be matcher" }
     expect(be_test["status"]).to eq("passed")
     expect(be_test).to have_key("details")
-    
+
     # Same two-step deserialization
     expected_json_str = JSON.parse(be_test["details"]["expected"])
     actual_json_str = JSON.parse(be_test["details"]["actual"])
-    
-    expect(Oj.load(expected_json_str, OJ_LOAD_OPTIONS)).to be true
-    expect(Oj.load(actual_json_str, OJ_LOAD_OPTIONS)).to be true
+
+    expect(Oj.load(expected_json_str, oj_load_options)).to be true
+    expect(Oj.load(actual_json_str, oj_load_options)).to be true
     expect(be_test["details"]["matcher_name"]).to eq("RSpec::Matchers::BuiltIn::Equal")
 
     # Test 3: include matcher
     include_test = examples.find { |e| e["description"] == "captures values for include matcher" }
     expect(include_test["status"]).to eq("passed")
     expect(include_test).to have_key("details")
-    
+
     # Same two-step deserialization
     expected_json_str = JSON.parse(include_test["details"]["expected"])
     actual_json_str = JSON.parse(include_test["details"]["actual"])
-    
+
     # Include matcher stores expected as an array
-    expect(Oj.load(expected_json_str, OJ_LOAD_OPTIONS)).to eq([2])
-    expect(Oj.load(actual_json_str, OJ_LOAD_OPTIONS)).to eq([1, 2, 3])
+    expect(Oj.load(expected_json_str, oj_load_options)).to eq([2])
+    expect(Oj.load(actual_json_str, oj_load_options)).to eq([1, 2, 3])
     expect(include_test["details"]["matcher_name"]).to eq("RSpec::Matchers::BuiltIn::Include")
 
     # Test 4: match matcher
     match_test = examples.find { |e| e["description"] == "captures values for match matcher" }
     expect(match_test["status"]).to eq("passed")
     expect(match_test).to have_key("details")
-    
+
     # Same two-step deserialization
     expected_json_str = JSON.parse(match_test["details"]["expected"])
     actual_json_str = JSON.parse(match_test["details"]["actual"])
-    
+
     # Regex cannot be fully deserialized with auto_define: false (security setting)
     # It becomes an uninitialized Regexp object
-    expected_regex = Oj.load(expected_json_str, OJ_LOAD_OPTIONS)
+    expected_regex = Oj.load(expected_json_str, oj_load_options)
     expect(expected_regex).to be_a(Regexp)
     # Can't check source - it's uninitialized
-    
-    expect(Oj.load(actual_json_str, OJ_LOAD_OPTIONS)).to eq("hello world")
+
+    expect(Oj.load(actual_json_str, oj_load_options)).to eq("hello world")
     expect(match_test["details"]["matcher_name"]).to eq("RSpec::Matchers::BuiltIn::Match")
 
     # Test 5: negated matcher
     negated_test = examples.find { |e| e["description"] == "captures values for negated matchers" }
     expect(negated_test["status"]).to eq("passed")
     expect(negated_test).to have_key("details")
-    
+
     # Same two-step deserialization
     expected_json_str = JSON.parse(negated_test["details"]["expected"])
     actual_json_str = JSON.parse(negated_test["details"]["actual"])
-    
-    expect(Oj.load(expected_json_str, OJ_LOAD_OPTIONS)).to eq(10)
-    expect(Oj.load(actual_json_str, OJ_LOAD_OPTIONS)).to eq(5)
+
+    expect(Oj.load(expected_json_str, oj_load_options)).to eq(10)
+    expect(Oj.load(actual_json_str, oj_load_options)).to eq(5)
     expect(negated_test["details"]["negated"]).to be true  # Regular JSON boolean
 
     # Test 6: complex objects
     complex_test = examples.find { |e| e["description"] == "captures values for complex objects" }
     expect(complex_test["status"]).to eq("passed")
     expect(complex_test).to have_key("details")
-    
+
     # Same two-step deserialization
     expected_json_str = JSON.parse(complex_test["details"]["expected"])
     actual_json_str = JSON.parse(complex_test["details"]["actual"])
-    
-    expected_hash = Oj.load(expected_json_str, OJ_LOAD_OPTIONS)
-    actual_hash = Oj.load(actual_json_str, OJ_LOAD_OPTIONS)
-    
+
+    expected_hash = Oj.load(expected_json_str, oj_load_options)
+    actual_hash = Oj.load(actual_json_str, oj_load_options)
+
     # Oj preserves symbol keys with mode: :object
     expect(expected_hash).to eq({name: "Alice", age: 30})
     expect(actual_hash).to eq({name: "Alice", age: 30})
@@ -175,13 +177,13 @@ RSpec.describe "Passing test value capture integration" do
     failing_test = examples.find { |e| e["description"] == "failing test for comparison" }
     expect(failing_test["status"]).to eq("failed")
     expect(failing_test).to have_key("details")
-    
+
     # Same two-step deserialization
     expected_json_str = JSON.parse(failing_test["details"]["expected"])
     actual_json_str = JSON.parse(failing_test["details"]["actual"])
-    
-    expect(Oj.load(expected_json_str, OJ_LOAD_OPTIONS)).to eq(2)
-    expect(Oj.load(actual_json_str, OJ_LOAD_OPTIONS)).to eq(1)
+
+    expect(Oj.load(expected_json_str, oj_load_options)).to eq(2)
+    expect(Oj.load(actual_json_str, oj_load_options)).to eq(1)
     # Failed tests don't have passed field in details (it's in the exception)
   end
 
@@ -236,4 +238,3 @@ RSpec.describe "Passing test value capture integration" do
     expect(passing_tests.all? { |test| test.key?("details") }).to be true
   end
 end
-

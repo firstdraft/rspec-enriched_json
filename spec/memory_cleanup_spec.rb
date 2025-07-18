@@ -22,9 +22,9 @@ RSpec.describe "Memory cleanup" do
   it "can clear test values" do
     # Simply verify the method exists and works
     RSpec::EnrichedJson.all_test_values["dummy_test"] = {expected: 1, actual: 2}
-    
+
     RSpec::EnrichedJson.clear_test_values
-    
+
     # Check that dummy_test was removed (ignore any values from this test itself)
     expect(RSpec::EnrichedJson.all_test_values["dummy_test"]).to be_nil
   end
