@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe "Predicate matcher value capture" do
   let(:formatter) { RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter.new(StringIO.new) }
-  
+
   # Use the same Oj options for loading that we use for dumping
   let(:oj_load_options) do
     {
