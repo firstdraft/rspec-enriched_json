@@ -1,5 +1,9 @@
 # RSpec::EnrichedJson
 
+[![CI](https://github.com/firstdraft/rspec-enriched_json/actions/workflows/ci.yml/badge.svg)](https://github.com/firstdraft/rspec-enriched_json/actions/workflows/ci.yml)
+[![Gem Version](https://badge.fury.io/rb/rspec-enriched_json.svg)](https://badge.fury.io/rb/rspec-enriched_json)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/standardrb/standard)
+
 A drop-in replacement for RSpec's built-in JSON formatter that enriches the output with structured failure data. This makes it easy to programmatically analyze test results, extract expected/actual values, and build better CI/CD integrations.
 
 ## Quick Demo
