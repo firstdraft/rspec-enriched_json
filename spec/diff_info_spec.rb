@@ -101,20 +101,4 @@ RSpec.describe "diffable" do
     end
   end
 
-  it "removes diff from the message if expected and actual are present" do
-    test_content = <<~RUBY
-      RSpec.describe "Account balance" do
-        it "matches a sub-string" do
-          expect("Your account balance is: -50").to match(/Your account balance is: [1-9]\d*/)
-        end
-      end
-    RUBY
-
-    output = run_formatter_with_content(test_content)
-    message = output["examples"].first["exception"]["message"]
-
-    expect(message).to include("expected \"Your account balance is: -50\"")
-    expect(message).to include("to match /Your account balance is:")
-    expect(message).not_to include("Diff:")
-  end
 end

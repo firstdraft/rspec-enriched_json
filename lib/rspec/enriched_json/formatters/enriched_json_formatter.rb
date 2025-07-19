@@ -25,13 +25,6 @@ module RSpec
                 if e.is_a?(RSpec::EnrichedJson::EnrichedExpectationNotMetError) && e.details
                   hash[:details] = e.details
                 end
-
-                if hash.key?(:details) && hash[:details].key?(:expected) && hash[:details].key?(:actual)
-                  exception_message = hash[:exception][:message]
-                  if exception_message.include?("\nDiff:")
-                    hash[:exception][:message] = exception_message.sub(/Diff:.*/m, "").strip
-                  end
-                end
               else
                 key = notification.example.id
                 if RSpec::EnrichedJson.all_test_values.key?(key)

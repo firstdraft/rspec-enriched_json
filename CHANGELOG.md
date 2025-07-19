@@ -14,10 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Major code simplification - removed unnecessary abstractions and comments
 - Updated documentation to reflect actual features (removed non-existent performance limits)
+- **BREAKING**: No longer removes diff from exception messages - now a true drop-in replacement
 
 ### Fixed
 - Fixed spec files that were causing false CI failures
 - Updated integration tests to match current behavior
+
+### Removed
+- Removed automatic diff stripping from exception messages (introduced in 0.6.1)
 
 ## [0.6.1] - 2025-07-18
 
