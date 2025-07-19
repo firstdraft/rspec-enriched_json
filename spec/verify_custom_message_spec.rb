@@ -37,5 +37,4 @@ RSpec.describe "Custom message behavior verification" do
       expect(e.details[:original_message]).to be_nil
     end
   end
-
 end
