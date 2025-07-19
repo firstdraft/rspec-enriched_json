@@ -116,7 +116,7 @@ module RSpec
           object_preparer: lambda { |obj|
             RSpec::Matchers::Composable.surface_descriptions_in(obj)
           },
-          color: false
+          color: RSpec.configuration.color_enabled?
         )
         differ.diff(actual, expected)
       rescue
