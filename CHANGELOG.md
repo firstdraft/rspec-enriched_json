@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2025-07-18
+
+### Added
+- Add `negated` flag to detect when `not_to` or `to_not` is used
+- Add `passed` field to distinguish passing from failing tests in captured values
+
+### Changed
+- Major code simplification - removed unnecessary abstractions and comments
+- Updated documentation to reflect actual features (removed non-existent performance limits)
+
+### Fixed
+- Fixed spec files that were causing false CI failures
+- Updated integration tests to match current behavior
+
 ## [0.6.1] - 2025-07-18
 
 ### Added

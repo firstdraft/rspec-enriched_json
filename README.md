@@ -174,19 +174,23 @@ bundle exec standardrb
 bundle exec standardrb --fix
 ```
 
-## Performance Considerations
+## Additional Features
 
-The enriched formatter adds minimal overhead:
-- Only processes failing tests (passing tests have no extra processing)
-- Limits serialization depth to prevent infinite recursion
-- Truncates large strings and collections to maintain reasonable output sizes
-- No impact on test execution time, only on failure reporting
+### Passing Test Value Capture
+The formatter also captures expected/actual values for passing tests, useful for:
+- Test analytics and insights
+- Understanding test coverage patterns
+- Debugging flaky tests
 
-Default limits:
-- Max serialization depth: 5 levels
-- Max array size: 100 items
-- Max hash size: 100 keys
-- Max string length: 1000 characters
+### Negation Detection
+Tests using `not_to` or `to_not` include a `negated: true` flag in the details.
+
+### Serialization
+Values are serialized using [Oj](https://github.com/ohler55/oj) in object mode, providing:
+- Circular reference handling
+- Proper Ruby object serialization
+- Excellent performance
+- Special handling for Regexp objects (serialized as inspect strings)
 
 ## Contributing
 
