@@ -100,5 +100,4 @@ RSpec.describe "diffable" do
       expect(output["examples"].first["details"]["diffable"]).to eq(false)
     end
   end
-
 end

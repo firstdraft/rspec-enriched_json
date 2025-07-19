@@ -42,7 +42,7 @@ module RSpec
           nan: :word
         }
 
-        def serialize_value(value, depth = 0)
+        def serialize_value(value)
           if value.is_a?(Regexp)
             return Oj.dump(value.inspect, mode: :compat)
           end
