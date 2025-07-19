@@ -5,7 +5,6 @@ RSpec.describe "Negated matcher handling" do
   let(:output) { StringIO.new }
   let(:formatter) { RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter.new(output) }
 
-
   context "integration with formatter" do
     it "includes negated flag in JSON output" do
       # Create a separate configuration to avoid affecting global state
