@@ -21,13 +21,20 @@
 # Other gems for AI context
 /diffy/
 /super_diff/
+/fuzzy_match_poc/
+/oj/
+/parallel_tests/
+/amazing_print/
 
 # Bundler
 Gemfile.lock
 
-# Test output files (from old complex demo)
+# Test output files
+*.json
 enriched_output.json
 standard_output.json
+builtin_json_output.json
+vanilla_output.json
 
 # IDE
 .idea/
@@ -36,3 +43,4 @@ standard_output.json
 *.swo
 *~
 .DS_Store
+.claude/

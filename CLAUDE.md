@@ -22,7 +22,7 @@ This project creates a universal JSON output system for RSpec matchers:
 - `lib/rspec/enriched_json/formatters/enriched_json_formatter.rb` - JSON formatter that outputs enriched data
 - `rspec-enriched_json.gemspec` - Gem specification
 - `spec/` - Test suite with integration and unit tests
-- `demo_all_failures.rb` - Demo script showing various failure types
+- `demo.rb` - Demo script showing various failure types
 - `Gemfile` - Dependencies (rspec, standard)
 - `.standard.yml` - StandardRB configuration
 
