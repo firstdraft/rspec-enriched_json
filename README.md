@@ -99,14 +99,14 @@ With this gem, you get structured data alongside the original message:
 
 ## Features
 
-- **Drop-in replacement**: Inherits from RSpec's JsonFormatter, maintaining 100% compatibility
-- **Structured data extraction**: Expected and actual values as proper JSON objects
-- **Rich object support**: Arrays, hashes, and custom objects are properly serialized
-- **Original message preservation**: When you override with a custom message, the original is preserved
-- **Graceful degradation**: Regular exceptions (non-expectation failures) work normally
-- **Enhanced metadata capture**: Test location, tags, hierarchy, and custom metadata
-- **Robust error recovery**: Handles objects that fail to serialize without crashing
-- **Diff information**: Includes `diffable` to help tools determine if values can be meaningfully diffed
+- **Drop-in replacement**: Inherits from RSpec's JsonFormatter, maintaining 100% compatibility.
+- **Structured data extraction**: Expected and actual values as proper JSON objects.
+- **Rich object support**: Arrays, hashes, and custom objects are properly serialized.
+- **Original message preservation**: When you override with a custom message, the original is preserved.
+- **Graceful degradation**: Regular exceptions (non-expectation failures) work normally.
+- **Enhanced metadata capture**: Test location, tags, hierarchy, and custom metadata.
+- **Robust error recovery**: Handles objects that fail to serialize without crashing.
+- **Diff information**: Includes `diffable` to help tools determine if values can be meaningfully diffed.
 
 ## Examples
 
@@ -151,18 +151,18 @@ end
 
 ## Use Cases
 
-- **CI/CD Integration**: Parse test results to create rich error reports
-- **Test Analytics**: Track which values commonly cause test failures  
-- **Debugging Tools**: Build tools that can display expected vs actual diffs
-- **Learning Platforms**: Provide detailed feedback on why tests failed
+- **CI/CD Integration**: Parse test results to create rich error reports.
+- **Test Analytics**: Track which values commonly cause test failures.
+- **Debugging Tools**: Build tools that can display expected vs actual diffs.
+- **Learning Platforms**: Provide detailed feedback on why tests failed.
 
 ## How It Works
 
 The gem works by:
 
-1. Patching RSpec's expectation system to capture structured data when expectations fail
-2. Extending the JsonFormatter to include this data in the JSON output
-3. Maintaining full backward compatibility with existing tools
+1. Patching RSpec's expectation system to capture structured data when expectations fail.
+2. Extending the JsonFormatter to include this data in the JSON output.
+3. Maintaining full backward compatibility with existing tools.
 
 ## Development
 
@@ -182,19 +182,19 @@ bundle exec standardrb --fix
 
 ### Passing Test Value Capture
 The formatter also captures expected/actual values for passing tests, useful for:
-- Test analytics and insights
-- Understanding test coverage patterns
-- Debugging flaky tests
+- Test analytics and insights.
+- Understanding test coverage patterns.
+- Debugging flaky tests.
 
 ### Negation Detection
 Tests using `not_to` or `to_not` include a `negated: true` flag in the details.
 
 ### Serialization
 Values are serialized using [Oj](https://github.com/ohler55/oj) in object mode, providing:
-- Circular reference handling
-- Proper Ruby object serialization
-- Excellent performance
-- Special handling for Regexp objects (serialized as inspect strings)
+- Circular reference handling.
+- Proper Ruby object serialization.
+- Excellent performance.
+- Special handling for Regexp objects (serialized as inspect strings).
 
 ## Contributing
 
