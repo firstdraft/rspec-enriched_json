@@ -16,15 +16,10 @@
 
 # RSpec
 .rspec_status
-/rspec/
 
 # Other gems for AI context
-/diffy/
-/super_diff/
-/fuzzy_match_poc/
+/rspec/
 /oj/
-/parallel_tests/
-/amazing_print/
 
 # Bundler
 Gemfile.lock
