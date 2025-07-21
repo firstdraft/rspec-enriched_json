@@ -34,7 +34,7 @@ This interactive demo script runs the same failing tests with both formatters an
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rspec-enriched_json'
+gem "rspec-enriched_json"
 ```
 
 And then execute:
