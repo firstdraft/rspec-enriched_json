@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
     "source_code_uri" => "https://github.com/firstdraft/rspec-enriched_json"
   }
 
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.2"
   spec.add_dependency "rspec-core", ">= 3.0"
   spec.add_dependency "rspec-expectations", ">= 3.0"
   spec.add_dependency "oj", "~> 3.16"
