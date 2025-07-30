@@ -36,6 +36,21 @@ module RSpec
           end
         end
 
+        def dump_summary(summary)
+          puts "dumping summary"
+          super
+
+          if @output_hash[:errors_outside_of_examples]&.any?
+            @output_hash[:errors_outside_of_examples].map! do |error|
+              {
+                class: error[:exception].class.name,
+                message: error[:exception].message,
+                backtrace: error[:exception].backtrace,
+              }
+            end
+          end
+        end
+
         private
 
         def add_metadata(hash, example)
