@@ -7,6 +7,7 @@ module RSpec
   module EnrichedJson
     module Formatters
       class EnrichedJsonFormatter < RSpec::Core::Formatters::JsonFormatter
+        EXCEPTION_DETECTOR_REGEX = /(Exception|Error|undefined method|uninitialized constant)/
         PATH_AND_LINE_NUMBER_REGEX = /#?(?<path>.+?):(?<line_number>\d+)(?::in `.*')?/
         EXCEPTION_CLASS_AND_MESSAGE_REGEX = /^(?<exception_class>[A-Z]\w*Error|Exception):$\n(?<exception_message>(^\s\s.*\n?)+)/
 
@@ -47,24 +48,28 @@ module RSpec
         end
 
         def message(notification)
-          ansi_escape = /\e\[[0-9;]*[mGKHF]/
-          clean_message = notification.message.gsub(ansi_escape, "")
+          super
 
-          error_info = {
-            message: clean_message
-          }
+          if notification.message.match?(EXCEPTION_DETECTOR_REGEX)
+            ansi_escape = /\e\[[0-9;]*[mGKHF]/
+            clean_message = notification.message.gsub(ansi_escape, "")
 
-          if match = clean_message.match(PATH_AND_LINE_NUMBER_REGEX)
-            error_info[:path] = match.named_captures["path"]
-            error_info[:line_number] = match.named_captures["line_number"]
+            error_info = {
+              message: clean_message
+            }
+
+            if match = clean_message.match(PATH_AND_LINE_NUMBER_REGEX)
+              error_info[:path] = match.named_captures["path"]
+              error_info[:line_number] = match.named_captures["line_number"]
+            end
+
+            if match = clean_message.match(EXCEPTION_CLASS_AND_MESSAGE_REGEX)
+              error_info[:exception_class] = match.named_captures["exception_class"]
+              error_info[:exception_message] = match.named_captures["exception_message"]
+            end
+
+            @output_hash[:errors] << error_info
           end
-
-          if match = clean_message.match(EXCEPTION_CLASS_AND_MESSAGE_REGEX)
-            error_info[:exception_class] = match.named_captures["exception_class"]
-            error_info[:exception_message] = match.named_captures["exception_message"]
-          end
-
-          @output_hash[:errors] << error_info
         end
 
         private
