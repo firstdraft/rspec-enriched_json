@@ -39,7 +39,9 @@ def run_formatter_with_content(test_content)
     "bundle", "exec", "rspec", test_file.path,
     "--format", "RSpec::EnrichedJson::Formatters::EnrichedJsonFormatter",
     "--out", output_file.path,
-    "-r", "./lib/rspec/enriched_json"
+    "-r", "./lib/rspec/enriched_json",
+    err: File::NULL,
+    out: File::NULL
   )
 
   JSON.parse(File.read(output_file.path))
