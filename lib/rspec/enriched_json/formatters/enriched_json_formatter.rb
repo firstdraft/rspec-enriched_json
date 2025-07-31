@@ -7,7 +7,17 @@ module RSpec
   module EnrichedJson
     module Formatters
       class EnrichedJsonFormatter < RSpec::Core::Formatters::JsonFormatter
+        PATH_AND_LINE_NUMBER_REGEX = /#?(?<path>.+?):(?<line_number>\d+)(?::in `.*')?/
+        EXCEPTION_CLASS_AND_MESSAGE_REGEX = /^(?<exception_class>[A-Z]\w*Error|Exception):$\n(?<exception_message>(^\s\s.*\n?)+)/
+
         RSpec::Core::Formatters.register self, :message, :dump_summary, :dump_profile, :stop, :seed, :close
+
+        def initialize(output)
+          super
+          @output_hash = {
+            errors: []
+          }
+        end
 
         def stop(group_notification)
           @output_hash[:examples] = group_notification.notifications.map do |notification|
@@ -36,19 +46,25 @@ module RSpec
           end
         end
 
-        def dump_summary(summary)
-          puts "dumping summary"
-          super
+        def message(notification)
+          ansi_escape = /\e\[[0-9;]*[mGKHF]/
+          clean_message = notification.message.gsub(ansi_escape, "")
 
-          if @output_hash[:errors_outside_of_examples]&.any?
-            @output_hash[:errors_outside_of_examples].map! do |error|
-              {
-                class: error[:exception].class.name,
-                message: error[:exception].message,
-                backtrace: error[:exception].backtrace,
-              }
-            end
+          error_info = {
+            message: clean_message
+          }
+
+          if match = clean_message.match(PATH_AND_LINE_NUMBER_REGEX)
+            error_info[:path] = match.named_captures["path"]
+            error_info[:line_number] = match.named_captures["line_number"]
           end
+
+          if match = clean_message.match(EXCEPTION_CLASS_AND_MESSAGE_REGEX)
+            error_info[:exception_class] = match.named_captures["exception_class"]
+            error_info[:exception_message] = match.named_captures["exception_message"]
+          end
+
+          @output_hash[:errors] << error_info
         end
 
         private
