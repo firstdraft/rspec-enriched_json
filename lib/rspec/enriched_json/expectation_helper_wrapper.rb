@@ -45,6 +45,8 @@ module RSpec
         def serialize_value(value)
           if value.is_a?(Regexp)
             return Oj.dump(value.inspect, mode: :compat)
+          elsif value.is_a?(Proc)
+            return value.call
           end
 
           Oj.dump(value, OJ_OPTIONS)

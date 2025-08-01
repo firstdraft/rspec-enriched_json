@@ -60,6 +60,11 @@ test_content = <<~'RUBY'
     it "eq with nil" do
       expect("Alice").to eq(nil)
     end
+
+    it "eq with proc" do
+      helloworld = proc { "Hello, world!" }
+      expect(helloworld).to eq("Hello!")
+    end
     
     # Identity Matchers
     it "be (object identity)" do
@@ -394,7 +399,7 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
 
     # Group examples by category for better organization
     categories = {
-      "Basic Equality Matchers" => ["eq with strings", "eq with numbers", "eq with arrays", "eq with hashes", "eq with nested structures", "eq with array of symbols", "eq with nil"],
+      "Basic Equality Matchers" => ["eq with strings", "eq with numbers", "eq with arrays", "eq with hashes", "eq with nested structures", "eq with array of symbols", "eq with nil", "eq with proc"],
       "Identity Matchers" => ["be (object identity)", "equal (alias for be)"],
       "Comparison Matchers" => ["be >", "be <", "be >=", "be <=", "be_between", "be_within"],
       "Type Matchers" => ["be_a / be_kind_of", "be_an_instance_of"],
@@ -403,7 +408,6 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
       "Collection Matchers" => ["include", "include with multiple items", "include with hash", "start_with", "end_with", "match (regex)", "match (regex) with custom message", "contain_exactly", "match_array", "all"],
       "String Matchers" => ["match with string", "unescaping quotes in actual", "strings with newlines"],
       "Change Matchers" => ["change", "change by", "change by_at_least", "change by_at_most"],
-      "Output Matchers" => ["output to stdout", "output to stderr"],
       "Exception Matchers" => ["raise_error", "raise_error with message", "raise_error when none raised", "unexpected exception (outside expect block)"],
       "Other Matchers" => ["throw_symbol", "exist", "cover", "cover multiple values", "respond_to", "respond_to with arguments", "have_attributes", "satisfy", "satisfy with complex block"],
       "Compound & Negated" => ["and", "or", "not_to eq", "not_to include"],
