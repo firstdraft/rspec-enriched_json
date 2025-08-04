@@ -7,7 +7,19 @@ module RSpec
   module EnrichedJson
     module Formatters
       class EnrichedJsonFormatter < RSpec::Core::Formatters::JsonFormatter
+        ANSI_COLOR_REGEX = /\e\[[0-9;]*[mGKHF]/
+        EXCEPTION_DETECTOR_REGEX = /(Exception|Error|undefined method|uninitialized constant)/
+        PATH_AND_LINE_NUMBER_REGEX = /#?(?<path>.+?):(?<line_number>\d+)/
+        EXCEPTION_CLASS_AND_MESSAGE_REGEX = /^(?<exception_class>[A-Z]\w*Error|Exception):$\n(?<exception_message>(?<extra>^\s\s.*\n?)+)/
+
         RSpec::Core::Formatters.register self, :message, :dump_summary, :dump_profile, :stop, :seed, :close
+
+        def initialize(output)
+          super
+          @output_hash = {
+            errors: []
+          }
+        end
 
         def stop(group_notification)
           @output_hash[:examples] = group_notification.notifications.map do |notification|
@@ -33,6 +45,30 @@ module RSpec
                 end
               end
             end
+          end
+        end
+
+        def message(notification)
+          super
+
+          if notification.message.match?(EXCEPTION_DETECTOR_REGEX)
+            clean_message = notification.message.gsub(ANSI_COLOR_REGEX, "")
+
+            error_info = {
+              message: clean_message
+            }
+
+            if (match = clean_message.match(PATH_AND_LINE_NUMBER_REGEX))
+              error_info[:path] = match.named_captures["path"]
+              error_info[:line_number] = match.named_captures["line_number"]
+            end
+
+            if (match = clean_message.match(EXCEPTION_CLASS_AND_MESSAGE_REGEX))
+              error_info[:exception_class] = match.named_captures["exception_class"]
+              error_info[:exception_message] = match.named_captures["exception_message"]
+            end
+
+            @output_hash[:errors] << error_info
           end
         end
 
