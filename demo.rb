@@ -414,7 +414,8 @@ Tempfile.create(["demo_test", ".rb"]) do |test_file|
       "Custom Messages" => ["custom failure message", "custom message with block"],
       "Complex Objects" => ["struct comparison", "custom class object comparison", "test with metadata", "custom object with many instance variables"],
       "Fuzzy Matchers" => ["a_string_matching", "a_hash_including", "a_collection_containing_exactly", "an_instance_of", "include with hash conditions"],
-      "Yield Matchers" => ["yield_control", "yield_with_args"]
+      "Yield Matchers" => ["yield_control", "yield_with_args"],
+      "Output Matchers" => ["output to stdout", "output to stderr"]
     }
 
     categories.each do |category, descriptions|

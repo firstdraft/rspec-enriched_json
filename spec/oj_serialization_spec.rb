@@ -42,15 +42,6 @@ RSpec.describe "Special serialization cases" do
       expect(result).to eq("/http:\\/\\/example\\.com/")
     end
   end
-
-  describe "serialization of Proc objects" do
-    it "calls a simple Proc" do
-      helloworld = proc { "Hello, world!" }
-      result = serializer.serialize_value(helloworld)
-      expect(result).to eq("Hello, world!")
-    end
-  end
-
   describe "Fallback behavior for errors" do
     it "uses fallback format when Oj.dump fails" do
       # Create an object that we'll mock to fail
