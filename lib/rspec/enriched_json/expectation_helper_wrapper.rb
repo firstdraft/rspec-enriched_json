@@ -4,6 +4,7 @@ require "json"
 require "oj"
 require "rspec/expectations"
 require "rspec/support/differ"
+require "stringio"
 
 module RSpec
   module EnrichedJson
@@ -46,7 +47,15 @@ module RSpec
           if value.is_a?(Regexp)
             return Oj.dump(value.inspect, mode: :compat)
           elsif value.is_a?(Proc)
-            return value.call
+            original_stdout = $stdout
+            $stdout = StringIO.new
+
+            value.call
+
+            output = $stdout.string
+            $stdout = original_stdout
+
+            return output
           end
 
           Oj.dump(value, OJ_OPTIONS)
